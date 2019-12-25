@@ -1,0 +1,23 @@
+
+module.exports = {
+    devServer : {
+        proxy : {//译代理
+            "/app":{
+                target: " http://localhost:3000",  //写访问的地址
+                ws: true,  // 允许跨域
+                changeOrigin: true,  //允许跨域
+                pathRewrite: {//译改写路径即重写 /app相当于变量 将地址赋予给变量
+                    "^/app": "http://localhost:3000"
+                }
+            },
+            "/api":{//若写多个就继续重复操作
+                target: " http://localhost:3000",
+                ws: true,
+                changeOrigin: true,
+                pathRewrite: {
+                    "^/api": "http://localhost:3000"
+                }
+            }
+        }
+    }
+}
