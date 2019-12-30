@@ -1,4 +1,4 @@
-# **起步-create-react-app使用**
+# **1. 起步-create-react-app使用**
 
 **1.什么是create-react-app**
 
@@ -14,11 +14,11 @@
 
 + 在打开网页时不能直接点击浏览器打开 要`yarn start`运行 打开
 
-# **虚拟DOM**
+# **2. 虚拟DOM**
 
 ![image-20191229123223670](C:\Users\35614\AppData\Roaming\Typora\typora-user-images\image-20191229123223670.png)
 
-# **创建虚拟DOM元素**
+# **3. 创建虚拟DOM元素**
 
 如果没用脚手架需下载React和ReactDOM 如果用了脚手架直接引入即可
 
@@ -50,7 +50,7 @@ const myh = React.createElement('h1',null,'我是一个大大的h1')
 
 
 
-# JSX 简介
+# 4. JSX 简介
 
 1. ==jsx不是字符串 也不是html 是JavaScript的扩展语法 是符合xml规范的js语法, jsx本身就是一表达式,==
 
@@ -170,7 +170,7 @@ const myh = React.createElement('h1',null,'我是一个大大的h1')
 
     在jsx内js代码只能写到{}内部 所以哪怕是注释也只能写到{}内部,综上在jsx中推荐用`/**/`注释
 
-   # **元素渲染**
+   # **5. 元素渲染**
 
 1. 和html dom元素不同, React元素是开销极小的普通对象,React元素是通过React DOM渲染为DOM的,React DOM会随时更新DOM来与React元素一致.即当React元素更新时 DOM也会实时更新
 
@@ -193,7 +193,7 @@ const myh = React.createElement('h1',null,'我是一个大大的h1')
 
 
 
-# **组件&props**
+# **6. 组件&props**
 
 + **组件:**接收唯一带有数据的props属性对象并返回React元素的叫组件
 
@@ -226,13 +226,38 @@ const myh = React.createElement('h1',null,'我是一个大大的h1')
 
 5. <font color=red>组件的命名开头必须是大写</font>,React会把小写开头的当做dom标签,大写开头的当做组件
 
-6. jsx接收的属性 会转为属性对象即`return null`
+6. jsx接收的属性 会转为属性对象即`props`,在`function`是通过形参接收`props`,在class中不需要接收.直接通过`this.props`获取,<font color=red>在class内部第一层的this都是指向实例</font>
 
-7. 组件可以在输出中引用其他组件
+7. 如果不想渲染任何组件可直接`return null`,`render()`函数作用是渲染当前组件返回的虚拟dom元素
+
+8. 组件可以在输出中引用其他组件
 
 ![image-20191229125629032](C:\Users\35614\AppData\Roaming\Typora\typora-user-images\image-20191229125629032.png)
 
 8. 组件的作用是可复用性,学会提取组件是必须的,最初看上去,提取组件可能是一种繁重的工作,但是在大型项目中构建可复用库完全值得,如果在UI中有一部分<font color=red>被多次使用或组件本身就比较复杂 那么它就是一个复用组件候选项</font>
+
+**两种组件创建的对比方式**
+
+1. function创建的组件,叫'' 无状态组件 ''(无状态组件今后用得不多)
+
+2. class创建的组件,叫'' 有状态组件 ''
+
+3. 本质区别就是: 有无state属性和有无生命周期函数
+
+4. class创建的组件有自己的私有数据state和生命周期函数,function都没有
+
+5. 什么情况使用不同组件?
+
+   ==推荐父组件都使用有状态组件== 因为功能更强大 如果使用了无状态组件指不定哪天需要用有状态的到时候更换比较麻烦,==子组件都用无状态组件==因为子组件数据是通过父组件传递拿的,所以自己不需要私有数据
+
+**`props`和`state/data`区别**
+
+React的`state`相当于就是vue中的`data`,`props`相当于vue中的`props`
+
+1. `props`是外界传来的数据
+2. `state`是组件私有数据(通过ajax获取的数据一般都是私有数据)
+3. `props`是只读的
+4. `state`是可读可写的
 
 **总结**:组件多次使用或者<font color=red>组件本身比较复杂就提取组件</font>
 
@@ -252,7 +277,7 @@ const myh = React.createElement('h1',null,'我是一个大大的h1')
 
 + <font color=red>所有 React 组件都必须像纯函数一样保护它们的 props 不被更改。</font>
 
-# 单独提取组件
+# 7. 单独提取组件
 
 + **组件一般为jsx文件**
 
@@ -332,7 +357,7 @@ const myh = React.createElement('h1',null,'我是一个大大的h1')
 
   
 
-# 在React中...扩展运算符的巧妙使用
+# 8. 在React中...扩展运算符的巧妙使用
 
 + obj的每一项分别通过属性传过去 而不是直接传obj
 
@@ -365,9 +390,135 @@ const myh = React.createElement('h1',null,'我是一个大大的h1')
   console.log(obj1)//{student: "9999999", name: "张三", age: 18, sex: "男"}
   ```
 
-  
 
-# State & 生命周期
+# 9. style和class样式
+
+### style
+
++ 在React中写行内样式,不能像平时这样写,会报错,例:
+
+```jsx
+<h5 style='color:red'>我是大标题</h5>//报错
+```
+
++ 正确写法例:
+
+```jsx
+ <h5 style={{color:'red',fontWeight:'bold','font-size':'14px'}}>我是大标题</h5>//正确
+```
+
++ 注意事项
+  1. 最外层`{ }`代表里面要写js代码 里层代表obj对象,也可单独定义对象再把名字丢进去
+  2. 值若是数字可不加引号,若为字符串必须引号,属性名若有`-`必须加引号,因js代码会解析为减号,若不写引号就小驼峰写法.
+
+### class
+
+#### 引入css文件
+
++ 一般不推荐写行内样式,所以通常是直接写样式文件,引入css文件.
+
++ 回顾vue组件中写样式`<style></style>`是在标签中写,这样写是全局生效,其他组件元素样式也会受影响,所以会写成`<style scoped></style>`这里的`scoped`会给HTML的DOM节点增加一个不重复的data属性,从而达到只对当前样式生效的效果.
+
++ 在React中若直接==引入css文件也是全局生效的.因====css没作用域==,打包后对整个项目都有效,js jsx这些都是有作用域的打包后不影响
+
++ 若不引入样式,打包不会打包css,所以只有引入.
+
++ **解决方案 ==( 重要 )==**
+
+  1. 在webpack中配置,`css-loader`后`?`接固定参数'modules'表为普通css样式表启动模块化(模块有作用域) 脚手架已配置好不需手动配置(这里将css样式表模块化 但是对安装到node_moduls的第三方包不模块化 所以正常使用可不担心)
+
+  ![image-20191230202804401](C:\Users\35614\AppData\Roaming\Typora\typora-user-images\image-20191230202804401.png)
+
+  2. css文件命名有要求,必须 `名字.module.css` 例`index.module.css`
+
+  3. 模块化只对css样式表里的类选择器和id选择器生效,标签选择器无效(标签选择器依然针对全局)
+
+     不能直接引入,需用变量接收模块化后的样式对象,打印变量知变量是obj,类名和id名用的一串随机码替代,使用时需要obj点原来的名
+
+     注意:虽然都是obj.名 但是id依旧要写id里 class写class里 否则无效
+
+     ```css
+     //css样式表
+     #ziti{
+       font-size: 40px;
+     }
+     .biaoti{
+       color:red
+     }
+     h3{
+       color: blue;
+     }
+     ```
+
+     ```jsx	
+     //组件内引入样式
+     import obj from'./index.module.css';
+     //打印
+     console.log(obj)
+     //打印结果
+     {ziti: "MyComponent_ziti__2QzQ-", biaoti: "MyComponent_biaoti__1pCPg"}
+     //使用
+     <h3 id={obj.ziti} className={obj.biaoti}>我是大标题</h3>//class和id名字要对应 
+     ```
+
+  4. 给类名写格式 脚手架已配置可不管,
+
+     模块化的 css文件 有类名的会模块化 若个别类名或id不想模块化见图第4点
+
+     ```css
+     //css样式表
+     :global(#ziti){
+       font-size: 40px;
+     }
+     ```
+
+     ```jsx
+      <h3 id='ziti'>我是大标题</h3>//全局的 直接使用 不需obj.名
+     ```
+
+     
+
+     ![image-20191230214005804](C:\Users\35614\AppData\Roaming\Typora\typora-user-images\image-20191230214005804.png)
+
+#### 写多个class类名
+
++ 一般类名写法:`<h1 class='lei1 lei2'></h1>` 用空格连接的
+
++ 在React中
+
+  + 方法一  空格字符串拼接
+
+     `<h1 className={变量+' lei2'}></h1>`
+
+  + 方法二  数组 join变成空格链接的字符串
+
+    `<h1 className={[变量,'leiming1'].join(' ')}></h1>`
+
+引入包时,若包已安装到node_modules下 可不写前面的路径直接写包名 会自动到node_modules下找
+
+# 10. React绑定事件的注意点
+
+1. 事件都是React提供的,名字必须小驼峰写法 例`onClick` 、`onMouseOver`
+
+2. 为事件提供的处理函数必须是如下格式:
+
+   ```jsx
+   onClick={function}
+   ```
+
+3. 用得最多的绑定形式是:
+
+   ```jsx
+   <button onClick={ ( ) => this.show('传参') }>按钮</button>
+   //事件的处理函数,需定义为一个箭头函数再赋值给 函数名称
+   show = (arg1) => {
+   	console.log('show方法' + arg1)
+   }
+   ```
+
+   
+
+# 11. State & 生命周期
 
 1. State组件的状态,props是不可改变的,State是可改变的.
 
@@ -391,7 +542,9 @@ const myh = React.createElement('h1',null,'我是一个大大的h1')
 
    ![image-20191229130052528](C:\Users\35614\AppData\Roaming\Typora\typora-user-images\image-20191229130052528.png)
 
-7. State是局部的 组件外部无法访问 父组件子组件都无法访问 除非是当前组件引用其他组件并将state传递过去 所以State是自上而下的 且 是单向的 是直接取值然后把值传过去
+7. 如果想立即拿到State的值,可执行`setState({},callback)`第二个参数是回调,执行此函数时结果是最新的.
+
+8. State是局部的 组件外部无法访问 父组件子组件都无法访问 除非是当前组件引用其他组件并将state传递过去 所以State是自上而下的 且 是单向的 是直接取值然后把值传过去
 
    ![image-20191229130146730](C:\Users\35614\AppData\Roaming\Typora\typora-user-images\image-20191229130146730.png)
 
