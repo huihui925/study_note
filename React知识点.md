@@ -1,4 +1,4 @@
-# **1. 起步-create-react-app使用**
+# *1. 起步-create-react-app使用**
 
 **1.什么是create-react-app**
 
@@ -520,8 +520,9 @@ React的`state`相当于就是vue中的`data`,`props`相当于vue中的`props`
 
 # 11. State & 生命周期
 
-1. State组件的状态,props是不可改变的,State是可改变的.
+## State
 
+1. State组件的状态,props是不可改变的,State是可改变的.
 2. 不能直接修改State,State只能在构造函数constructor中赋值 其他地方赋值会报错.其他地方只能用setState()来改变
 
 <img src="C:\Users\35614\AppData\Roaming\Typora\typora-user-images\image-20191229125957914.png" alt="image-20191229125957914" style="zoom:150%;" />
@@ -530,27 +531,152 @@ React的`state`相当于就是vue中的`data`,`props`相当于vue中的`props`
 
 4. 当组件状态更新时,render函数会重新执行并渲染,若是挂载到同一DOM节点上 只会有唯一的class组件的实例被创建使用,之前的组件会卸载.
 
-5. 两个生命周期函数
 
-    5.1 componentDidMount(){}组件挂载到DOM后执行的函数 
+5. State的更新是异步的,如果在同一事件函数中多次调用setState()不会执行的时候就马上更新而是当事件函数执行结束后一次性渲染 所以setState()注意写的顺序 如果是相同key 后面的会覆盖前面的 且不要在setState()内部用this.State 因为此结果不会实时更新 放回调函数是因为执行结束(执行到函数最后一步)想一次性渲染也没办法 因为它是回调 你不知道什么时候执行完 就不会等待 进入回调队列中 轮到它就立即执行并渲染
 
-    5.2 componentWillMount(){}组件删除卸载时执行的函数 此函数在挂载前调用
+![image-20191229130052528](C:\Users\35614\AppData\Roaming\Typora\typora-user-images\image-20191229130052528.png)
 
-这里用到了挂载和卸载两个词 自己记一下
+1. 如果想立即拿到State的值,可执行`settate({},callback)`第二个参数是回调,执行此函数时结果是最新的.
 
-6. State的更新是异步的,如果在同一事件函数中多次调用setState()不会执行的时候就马上更新而是当事件函数执行结束后一次性渲染 所以setState()注意写的顺序 如果是相同key 后面的会覆盖前面的 且不要在setState()内部用this.State 因为此结果不会实时更新 放回调函数是因为执行结束(执行到函数最后一步)想一次性渲染也没办法 因为它是回调 你不知道什么时候执行完 就不会等待 进入回调队列中 轮到它就立即执行并渲染
-
-   ![image-20191229130052528](C:\Users\35614\AppData\Roaming\Typora\typora-user-images\image-20191229130052528.png)
-
-7. 如果想立即拿到State的值,可执行`setState({},callback)`第二个参数是回调,执行此函数时结果是最新的.
-
-8. State是局部的 组件外部无法访问 父组件子组件都无法访问 除非是当前组件引用其他组件并将state传递过去 所以State是自上而下的 且 是单向的 是直接取值然后把值传过去
+2. State是局部的 组件外部无法访问 父组件子组件都无法访问 除非是当前组件引用其他组件并将state传递过去 所以State是自上而下的 且 是单向的 是直接取值然后把值传过去
 
    ![image-20191229130146730](C:\Users\35614\AppData\Roaming\Typora\typora-user-images\image-20191229130146730.png)
 
+## 生命周期
 
+可参考简书:https://www.jianshu.com/p/b331d0e4b398
 
+![React中组件的生命周期 - 详解](C:\Users\35614\AppData\Roaming\Typora\typora-user-images\React中组件的生命周期 - 详解.png)
 
++ #### 生命周期: 
 
+  组件的实例从创建、到运行、直到销毁,这整个阶段叫生命周期.
 
++ #### 生命周期函数: 
 
+  组件的实例从创建 运行 到销毁,在这个过程中特定阶段会触发特定事件,这些事件就叫做组件的生命周期函数.
+
++ #### 组件生命周期分为三部分：
+
+  - **组件创建阶段**：组件创建阶段的生命周期函数，有一个显著的特点：创建阶段的生命周期函数，在组件的一辈子中，只执行一次；
+
+  > ==constructor==:当new时,第一时间初始化私有数据state和实例属性
+  >
+  > ==componentWillMount:== 组件将要被挂载，此时还没有开始渲染创建虚拟DOM
+  > ==render：==第一次开始渲染真正的虚拟DOM，当render执行完，内存中就有了完整的虚拟DOM了
+  > ==componentDidMount:== 组件完成了挂载，此时，组件已经显示到了页面上，当这个方法执行完，组件就进入都了 运行中 的状态
+
+  - **组件运行阶段**：也有一个显著的特点，根据组件的state和props的改变，有选择性的触发0次或多次；
+
+  > ==componentWillReceiveProps:== 组件将要接收新属性，此时，只要这个方法被触发，就证明父组件为当前子组件传递了新的属性值；会回传更新过的`props`,并且可以使用`setState`来更新`state`，但是这里使用`setState`，并不会重新执行`componentWillReceiveProps`，因为`ReceiveProps`只会在更新传递的`props`的时候进行调用。
+  > ==shouldComponentUpdate:== 当组件接收到新属性，或者组件的状态发生改变时触发,组件是否需要被更新，此时，组件尚未被更新，但是，state 和 props 肯定是最新的,。组件首次渲染时并不会触发,这个生命周期的返回值是布尔值，会显示后续是否进行重新的渲染.
+  >
+  > ```jsx
+  > shouldComponentUpdate(newProps, newState) {
+  >     if (newProps.number < 5) return true;
+  >     return false
+  > }
+  > //该钩子函数可以接收到两个参数，新的属性和状态，返回`true/false`来控制组件是否需要更新。
+  > ```
+  >
+  > 我们使用这个生命周期一般用于优化，有的时候，我们在界面上只需要更新一个很小的组件，而一个父组件的更新会造成整个子组件都进行渲染，形成一个崭新的虚拟`DOM`，但是这样的话，会造成资源的浪费，我们可以根据实际的开发情况在`shouldComponentUpdate()`生命周期加入条件，来进行性能的优化。
+  >
+  > ==componentWillUpdate:== 组件将要被更新，此时，尚未开始更新,内存中的虚拟DOM树还是旧的
+  > ==render:== 此时，又要重新根据最新的 state 和 props 重新渲染一棵内存中的 虚拟DOM树，当 render 调用完毕，<font color=red>内存中</font>的旧DOM树，已经被新DOM树替换了！此时页面还是旧的.在这个生命周期使用`setState`，会导致重新跑回到`updata`的生命周期，然后在跑到`componentWillUpdate`，如果不慎用的话，会导致反复的执行。不能在这里面进行手动更新操作 会陷入无限循环卡死报错,
+  >
+  > ==componentDidUpdate:== 此时，页面又被重新渲染了，state 和 虚拟DOM 和 页面已经完全保持同步
+
+  - **组件销毁阶段**：也有一个显著的特点，一辈子只执行一次；
+
+  > ==componentWillUnmount:== 组件将要被卸载， 还没卸载 ,此时数据和方法正常可用 ；在这里可进行的操作有的是对轮询的请求的清理，有的是对定时器的清理，根据实际情况来定。
+
++ #### 将要废弃的生命周期
+
+  + componentWillMount() -> 17版废弃
+    - `componentWillMount`被废弃的理由：最初定的是最早在这里进行异步请求,但是如果在`componentWillMount`中发送异步请求，在`SSR`（服务端渲染）的情况下，服务端与客户端共用一套组件原代码，此时会发出两次请求（服务端请求一次、客户端请求一次），服务端的请求是多余的。如果将异步请求放在`componentDidMount`中，服务器不会执行`componentDidMount`生命周期函数，可以减少不必要的请求。
+    - componentDidMount`:另外==提醒==在這邊綁定`DOM eventListener`，記得在`willUnMount`取消綁定`EventListener`，避免造成過多的綁定事件。 
+  + componentWillReceiveProps(nextProps) -> 17版废弃
+  + componentWillUpdate（nextProps, nextState)  -> 17版废弃
+
++ ### defaultProps
+
+  > 在组件创建之前，会先初始化默认的props属性，这是全局调用一次，严格地来说，这不是组件的生命周期的一部分。在组件被创建并加载候，首先调用 constructor 构造器中的 this.state = {}，来初始化组件的状态。
+
+  React生命周期的回调函数总结成表格如下：
+  
+  ![React生命周期表格](C:\Users\35614\AppData\Roaming\Typora\typora-user-images\React生命周期表格.png)
+
+  组件生命周期的执行顺序：
+
+  + Mounting：
+  
+   - constructor()
+   - componentWillMount()
+ - render()
+   - componentDidMount()
+
+  + Updating：
+  
+   - componentWillReceiveProps(nextProps)
+   - shouldComponentUpdate(nextProps, nextState)
+   - componentWillUpdate(nextProps, nextState)
+ - render()
+   - componentDidUpdate(prevProps, prevState)
+
+  + Unmounting：
+  
+   - componentWillUnmount()
+
+# 12.获取当前元素
+
++ 通过事件e获取
+
+  触发事件时通过`e.target`获取,若元素为input,想获取value则:`e.targer.value`
+
++ 通过ref获取
+
+  + 在vue中也有ref,回顾vue中是:
+
+    ```jsx
+    //在标签上属性ref 值为自定义名
+    <h1 ref='name'>标签</h1>
+    //使用时
+    this.$refs.name
+    //注意:定义时ref因是单个所以没s,获取时refs是对象 有多个所以有s
+    ```
+
+  + 在React中其他和vue相同,唯一不同的是获取直接`this.refs.自定义名` 没有$
+
+    ```jsx
+    <h1 ref='name'>标签</h1>
+    this.refs.name
+    ```
+
+综上:两种方法自行选择
+
++ 案例 :
+
+  在input上直接设置value值 会导致input框只读 且会报警告
+
+  + 取消警告的方法
+
+    ```jsx
+     <input type="text" value={this.state.age} readOnly/>//设置属性为`readOnly`
+    ```
+
+  + 不设只读,可写,取消警告 
+
+    + 方法一 
+
+    ```jsx
+    <input type="text" defaultValue={this.state.age}/>//将`value`设为`defaultValue`
+    ```
+
+    + 方法二
+
+    ```jsx
+    <input type="text" value={this.state.age} onChange={'函数'} />
+    //绑定onChange事件,让事件一发生就设置文本内容,通常value都是从state中获取数据 所以设置也是setState({})
+    ```
+
+    
