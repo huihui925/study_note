@@ -1,4 +1,4 @@
-# *1. 起步-create-react-app使用**
+# 1. 起步-create-react-app使用
 
 **1.什么是create-react-app**
 
@@ -181,15 +181,13 @@ const myh = React.createElement('h1',null,'我是一个大大的h1')
      ReactDOM.render(element,document.getElementById(‘root’))
    ```
 
-4. 
+4. 由id root获取到index.html内的根DOM节点,将element元素渲染进去
 
-5. 由id root获取到index.html内的根DOM节点,将element元素渲染进去
+5. 通常React应用只有一个root根DOM节点,此节点内的所有内容由React DOM控制,如果有多个根节点 一般是React集成到已有应用
 
-6. 通常React应用只有一个root根DOM节点,此节点内的所有内容由React DOM控制,如果有多个根节点 一般是React集成到已有应用
+6. <font color=red>重点:React元素是不可变的</font> 一旦创建 其属性和子元素所有内容都不可改变,若想更新就是创建一全新React元素 重新render渲染
 
-7. <font color=red>重点:React元素是不可变的</font> 一旦创建 其属性和子元素所有内容都不可改变,若想更新就是创建一全新React元素 重新render渲染
-
-8. <font color=red>重点</font>:在4里面提到的创建全新元素且重新渲染,但是<font color=red>ReactDOM只会更新需要更新的部分</font>,即它会将React元素和子元素与它们之前的状态作对比,只更新需要更新的
+7. <font color=red>重点</font>:在4里面提到的创建全新元素且重新渲染,但是<font color=red>ReactDOM只会更新需要更新的部分</font>,即它会将React元素和子元素与它们之前的状态作对比,只更新需要更新的
 
 
 
@@ -222,15 +220,17 @@ const myh = React.createElement('h1',null,'我是一个大大的h1')
 
 3. jsx内部调用React.createElement()创建元素对象,jsx是JavaScript扩展语法 <font color=red>dom标签和组件<component />都是jsx语法 所以React元素可以是dom标签也可以是组件</font>
 
-4. 使用组件时 必须把组件用jsx表现出来即<component /> 而不是component
+4. 使用组件时 必须把组件用jsx表现出来即\<component /> 而不是component
 
 5. <font color=red>组件的命名开头必须是大写</font>,React会把小写开头的当做dom标签,大写开头的当做组件
 
-6. jsx接收的属性 会转为属性对象即`props`,在`function`是通过形参接收`props`,在class中不需要接收.直接通过`this.props`获取,<font color=red>在class内部第一层的this都是指向实例</font>
+6. jsx接收的属性 会转为属性对象即`props`,在`function`是通过形参接收`props`,在class中不需要接收.直接通过`this.props`获取,<font color=red>在class内部第一层的this都是指向实例</font>. 在`constructor`中`props`不能通过`this.props`获取,只能通过形参`props`直接使用`props` 不用`this`
 
-7. 如果不想渲染任何组件可直接`return null`,`render()`函数作用是渲染当前组件返回的虚拟dom元素
+7. <font color=red>props传值或方法: 可以传递普通属性或者方法给props,都是一样的使用.</font>
 
-8. 组件可以在输出中引用其他组件
+8. 如果不想渲染任何组件可直接`return null`,`render()`函数作用是渲染当前组件返回的虚拟dom元素
+
+9. 组件可以在输出中引用其他组件
 
 ![image-20191229125629032](C:\Users\35614\AppData\Roaming\Typora\typora-user-images\image-20191229125629032.png)
 
@@ -256,7 +256,7 @@ React的`state`相当于就是vue中的`data`,`props`相当于vue中的`props`
 
 1. `props`是外界传来的数据
 2. `state`是组件私有数据(通过ajax获取的数据一般都是私有数据)
-3. `props`是只读的
+3. `props`是只读的 
 4. `state`是可读可写的
 
 **总结**:组件多次使用或者<font color=red>组件本身比较复杂就提取组件</font>
@@ -273,9 +273,94 @@ React的`state`相当于就是vue中的`data`,`props`相当于vue中的`props`
 
   + 函数不改变入参(传入的参数 例不执行赋值 ++ --这类),且当多次调用下入参相同时返回的结果相同,这样的函数叫纯函数
 
-  + <font color=red>props只读 不可改变</font>
-
+  + <font color=red>props只读 不可改变</font> , 在`constructor`中`props`不能通过`this.props`获取,只能通过形参`props`直接使用`props` 不用`this`
 + <font color=red>所有 React 组件都必须像纯函数一样保护它们的 props 不被更改。</font>
+
+# 扩展/context特性
+
+记住一串单词组合`getChildContextTypes`
+前3个、后3个、后两个
+一个方法、两个静态属性
+
+> 场景: 当组件多层嵌套时一层层传递数据比较麻烦,所以可以用contex
+>
+> 使用:
+>
+> ​		1.引入类型校验包
+>
+> ​		2.在父组件定义普通function固定名getChildContext,返回共享数据对象
+>
+> ​		3.在父组件定义静态属性childContextTypes,进行类型校验,必须写
+>
+> ​		4.在子组件定义静态属性contextTypes,进行类型校验,若和父组件定义的类型不同会警告提示,必须写
+>
+> ​        5.通过this.context.名字 使用
+>
+> 注意:使用时有一个方法 两静态属性 名字都不同 根据上面口诀记忆 记一串单词 分别取前3个、后3个、后两个即可
+>
+> 使用次数:要进行类型校验还是麻烦 所以用得很少 需了解有这个东西 使用的时候再看笔记
+
+```jsx
+import React, { Component } from 'react'
+import ReactTypes from 'prop-types'
+
+//最外层父组件
+export default class Index extends Component {
+   constructor(props) {
+    super(props)
+
+    this.state = {
+      color: 'red'
+    }
+  }
+    //1.定义一个function 名字固定getChildContext,里面返回一个对象 这个对象的数据就是要共享的数据
+    getChildContext(){
+        return {
+            color:this.state.color
+        }
+    }
+    //2.导入类型校验包 定义静态属性childContextTypes 属性名固定 然后对所传数据进行校验 这步是必须的
+    static childContextTypes = {
+        color:ReactTypes.string
+    }
+    render() {
+        return (
+            <div>
+                <h1>我是父组件</h1>
+                <Index1></Index1>
+            </div>
+        )
+    }
+}
+//中间子组件
+class Index1 extends Component {
+    render() {
+        return (
+            <div>
+                <h5>我是子组件</h5>
+                <Index2></Index2>
+            </div>
+        )
+    }
+}
+//最内层孙组件
+class Index2 extends Component {
+    //3.使用时对所传数据类型校验 这步是必须的 不校验得不到数据 若校验出错会警告提示
+    static contextTypes = {
+        color:ReactTypes.string
+    }
+    render() {
+        return (
+            <div>
+                {/* 4.直接this.context.名字使用 */}
+                <h3 style={{color:this.context.color}}>我是孙子组件</h3>
+            </div>
+        )
+    }
+}
+```
+
+
 
 # 7. 单独提取组件
 
@@ -488,7 +573,7 @@ React的`state`相当于就是vue中的`data`,`props`相当于vue中的`props`
 
   + 方法一  空格字符串拼接
 
-     `<h1 className={变量+' lei2'}></h1>`
+    `<h1 className={变量+' lei2'}></h1>`
 
   + 方法二  数组 join变成空格链接的字符串
 
@@ -562,28 +647,47 @@ React的`state`相当于就是vue中的`data`,`props`相当于vue中的`props`
 
   > ==constructor==:当new时,第一时间初始化私有数据state和实例属性
   >
-  > ==componentWillMount:== 组件将要被挂载，此时还没有开始渲染创建虚拟DOM
-  > ==render：==第一次开始渲染真正的虚拟DOM，当render执行完，内存中就有了完整的虚拟DOM了
+  > ==componentWillMount:== 组件将要被挂载，此时还没有开始渲染创建虚拟DOM,props和state及function都能获取,等同于vue中的created
+  > ==render：==第一次开始渲染真正的虚拟DOM，当render执行完，内存中就有了完整的虚拟DOM了(创建阶段的render函数和更新时候的render函数是同一个 所以更新时也会运行此函数)
+  >
+  > ```jsx
+  > //因为和更新运行的同一函数 若想更新时打印获取元素的内容 这样会报错 因为第一次渲染的时候执行render函数 此时还没return 虚拟dom元素还没创建完 页面也没有dom 所以会报错
+  > console.log(this.refs.h3.innetText)
+  > //正确用法
+  > console.log(this.refs.h3 && this.refs.h3.innerText)
+  > //注意: 正确用法中若第一次执行打印的是undefined 打印undefined没错但是打印undefined.innerText肯定会报错 所以这里用&&来解决
+  > ```
+  >
+  > + <font color=red>&&运算符是个很小的知识点 但是以后会经常用到 要牢记</font>
+  >
   > ==componentDidMount:== 组件完成了挂载，此时，组件已经显示到了页面上，当这个方法执行完，组件就进入都了 运行中 的状态
 
   - **组件运行阶段**：也有一个显著的特点，根据组件的state和props的改变，有选择性的触发0次或多次；
 
-  > ==componentWillReceiveProps:== 组件将要接收新属性，此时，只要这个方法被触发，就证明父组件为当前子组件传递了新的属性值；会回传更新过的`props`,并且可以使用`setState`来更新`state`，但是这里使用`setState`，并不会重新执行`componentWillReceiveProps`，因为`ReceiveProps`只会在更新传递的`props`的时候进行调用。
+  > ==componentWillReceiveProps:== 父组件给子组件传递的值若更改,则会触发此函数,此函数只有父组件传递的值更改才会被触发,其他时候都不会触发,通常所说父组件传递的props属性改变,这里的props属性不是指父组件传的它的props而是指它传的任意东西,我们接收到的一切东西都是props.
+  >
+  > 在此函数直接this.props获取的是旧的props数据 若想获取新的需要通过参数列表nextProps获取
+  >
+  > 
+  >
   > ==shouldComponentUpdate:== 当组件接收到新属性，或者组件的状态发生改变时触发,组件是否需要被更新，此时，组件尚未被更新，但是，state 和 props 肯定是最新的,。组件首次渲染时并不会触发,这个生命周期的返回值是布尔值，会显示后续是否进行重新的渲染.
   >
   > ```jsx
   > shouldComponentUpdate(newProps, newState) {
-  >     if (newProps.number < 5) return true;
-  >     return false
+  > return this.state.count % 2 === 0? true:false
   > }
   > //该钩子函数可以接收到两个参数，新的属性和状态，返回`true/false`来控制组件是否需要更新。
   > ```
+  >
+  > ==//在这里面如果直接this.props或者this.state获取的是旧的数据 想要新的就必须通过参数nextProps和nextState获取==
   >
   > 我们使用这个生命周期一般用于优化，有的时候，我们在界面上只需要更新一个很小的组件，而一个父组件的更新会造成整个子组件都进行渲染，形成一个崭新的虚拟`DOM`，但是这样的话，会造成资源的浪费，我们可以根据实际的开发情况在`shouldComponentUpdate()`生命周期加入条件，来进行性能的优化。
   >
   > ==componentWillUpdate:== 组件将要被更新，此时，尚未开始更新,内存中的虚拟DOM树还是旧的
   > ==render:== 此时，又要重新根据最新的 state 和 props 重新渲染一棵内存中的 虚拟DOM树，当 render 调用完毕，<font color=red>内存中</font>的旧DOM树，已经被新DOM树替换了！此时页面还是旧的.在这个生命周期使用`setState`，会导致重新跑回到`updata`的生命周期，然后在跑到`componentWillUpdate`，如果不慎用的话，会导致反复的执行。不能在这里面进行手动更新操作 会陷入无限循环卡死报错,
-  >
+
+  注意:(创建阶段的render函数和更新时候的render函数是同一个 所以更新时也会运行此函数)
+
   > ==componentDidUpdate:== 此时，页面又被重新渲染了，state 和 虚拟DOM 和 页面已经完全保持同步
 
   - **组件销毁阶段**：也有一个显著的特点，一辈子只执行一次；
@@ -602,32 +706,81 @@ React的`state`相当于就是vue中的`data`,`props`相当于vue中的`props`
 
   > 在组件创建之前，会先初始化默认的props属性，这是全局调用一次，严格地来说，这不是组件的生命周期的一部分。在组件被创建并加载候，首先调用 constructor 构造器中的 this.state = {}，来初始化组件的状态。
 
+  通过静态属性defaultProps设置默认值
+
+  ```jsx
+  //当未传值时会使用默认值
+  static defaultProps = {
+        number:'我是默认值'
+      }
+  ```
+
++ ### propTypes
+
+  > 场景: 在团队协作中组件通常是给别人使用的,如果有必须使用的属性他们并不知道需要传什么类型的数据,所以此时就需要写组件的人对props进行类型校验.
+
+>设置类型校验后作用:对传入的props进行校验, 使用组件的人若传的props不是规定类型的值,东西可以用但是控制台会报警告提醒使用者.以便使用者及时修改.
+
+  + 安装React提供的第三方包, 叫prop-types;在v.15.\*之前并没有单独将包抽离出来,那时候和react一起的,后来v.15.*之后(2018年),官方把类型校验的模块单独抽离为一个包,叫prop-types.如果以后维护项目可能会遇到项目用到了类型校验但是因改革之前没单独包所以没安装的,此时就需要我们安装了.
+
+  + 脚手架已经安装了此包所以这里不需要再单独安装,直接引入并使用
+
+    ```jsx
+    //1.引入包
+    import ReactTypes from 'prop-types';
+    export default class Index extends Component {
+    //2.在静态属性propTypes上设置 此属性固定的一个大小写都不能错
+    	static propTypes = {
+                   // 3.传入的属性名是content(自定义),值是:此包里面有很多数据类型 所以值是引入的接收变量点对应类型
+            content:ReactTypes.number
+        }
+    }
+    ```
+
+    错误传值后报错如下: (提示传入的string 期望得到number类型)
+
+    ![image-20200101112303009](C:\Users\35614\AppData\Roaming\Typora\typora-user-images\image-20200101112303009.png)
+
+  > 注意:在vscod中如果包有.ts后缀文件可以按住ctrl再点击变量,可以跳转到对应文件里,在里面可以看到支持哪些类型的校验(如图第三列都是)
+
+  ![image-20200101112831577](C:\Users\35614\AppData\Roaming\Typora\typora-user-images\image-20200101112831577.png)
+
   React生命周期的回调函数总结成表格如下：
-  
+
   ![React生命周期表格](C:\Users\35614\AppData\Roaming\Typora\typora-user-images\React生命周期表格.png)
 
-  组件生命周期的执行顺序：
+  **组件生命周期的执行顺序：**(可以在这里看参数列表)
 
-  + Mounting：
-  
+ - Mounting：创建时
+
    - constructor()
    - componentWillMount()
- - render()
+
+   + render()
+
    - componentDidMount()
 
-  + Updating：
-  
-   - componentWillReceiveProps(nextProps)
-   - shouldComponentUpdate(nextProps, nextState)
-   - componentWillUpdate(nextProps, nextState)
- - render()
-   - componentDidUpdate(prevProps, prevState)
+  + Updating：更新时
 
-  + Unmounting：
-  
-   - componentWillUnmount()
+    + componentWillReceiveProps(nextProps)             
 
-# 12.获取当前元素
+    + shouldComponentUpdate(nextProps, nextState)
+
+    + componentWillUpdate(nextProps, nextState)
+
+    + render()
+
+    - componentDidUpdate(==prevProps, prevState==)     
+
+    > 注意: 能获取参数列表的只有更新时的生命周期函数有(除render()),组件将要更改props函数只有一个形参,是否更新和即将更新有两个形参,形参都是新数据,旧数据通过this获取. 已经更新的函数通过this获取的都是新数据 通过形参获取的都是旧数据 这样可以保证每个钩子函数都能获取新旧数据防止特殊需求
+    >
+    > 一新 两两新 一两旧
+
+  + Unmounting：渲染时
+
+    + componentWillUnmount()
+
+# 12. 获取当前元素
 
 + 通过事件e获取
 
@@ -639,17 +792,17 @@ React的`state`相当于就是vue中的`data`,`props`相当于vue中的`props`
 
     ```jsx
     //在标签上属性ref 值为自定义名
-    <h1 ref='name'>标签</h1>
+    <h1 ref='h1'>标签</h1>
     //使用时
-    this.$refs.name
+    this.$refs.h1
     //注意:定义时ref因是单个所以没s,获取时refs是对象 有多个所以有s
     ```
 
   + 在React中其他和vue相同,唯一不同的是获取直接`this.refs.自定义名` 没有$
 
     ```jsx
-    <h1 ref='name'>标签</h1>
-    this.refs.name
+    <h1 ref='h1'>标签</h1>
+    this.refs.h1
     ```
 
 综上:两种方法自行选择
@@ -679,4 +832,95 @@ React的`state`相当于就是vue中的`data`,`props`相当于vue中的`props`
     //绑定onChange事件,让事件一发生就设置文本内容,通常value都是从state中获取数据 所以设置也是setState({})
     ```
 
-    
+# 13. 路由
+
+### 13.1 基本使用
+
+在安装包时如果出错先检查记录依赖文件有没有记录下来,然后删除node_modules 再重新运行命令`npm i `或者`yarn`
+
+1. 安装包(脚手架没有安 要手动安装)
+
+   ` cnpm i react-router-dom -S`或者`yarn add react-router-dom`
+
+2. 基本使用
+
+   + 引入包  需要导出这三个东西
+
+     ```jsx
+     import { HashRouter as Router, Route, Link } from 'react-router-dom'
+     ```
+
+     - `HashRouter`是路由的根容器 一个网页只需要一个路由根容器 根容器内只能有唯一一个根元素 用根容器包裹元素就相当于启动路由了
+
+     - ` Route`路由匹配规则,里面有两个重要属性`path`和`component`前面是匹配路径 后面是匹配规则 都是小写的 有时候编译器快捷提示是大写 注意了
+
+       `Route`有两个身份 是匹配规则同时也是坑,在vue中坑是用`route-view`代替 但是这里是一个Route一个坑
+
+     - `Link`相当于vue中的`router-link`
+
+     注意: 这里匹配路由是自动接到后面的路径,不会覆盖页面内容,和vue中不同,至于覆盖的方式待后续了解.
+
+     ```jsx
+     import React, { Component } from 'react'
+     import { HashRouter as Router, Route, Link } from 'react-router-dom'
+     import Home from '../Home'
+     import About from '../About'
+     import List from '../List'
+     export default class Index extends Component {
+         render() {
+             return (
+                 <Router>
+                     <div>
+                         <h1>我是app首页</h1>
+                         <Link to='/Home'>Home</Link>&nbsp;&nbsp;&nbsp;&nbsp;
+                         <Link to='/About'>About</Link>&nbsp;&nbsp;&nbsp;&nbsp;
+                         <Link to='/List'>List</Link>&nbsp;&nbsp;&nbsp;&nbsp;
+                         <hr/>
+                         <Route path='/Home' component={Home}></Route>
+                         <Route path='/About' component={About}></Route>
+                         <Route path='/List' component={List}></Route>
+                     </div>
+                 </Router>
+             )
+         }
+     }
+     ```
+
+### 13.2 路由匹配参数
+
+React中的路由匹配是模糊匹配,只要有一部分匹配就可以展示对应路由组件,但是一般我们都需要精确匹配 所以可以在设置Route匹配规则时 添加第三个参数 exact 译精确,表示精确匹配
+
+```jsx
+//像这种只匹配一部分的也可以匹配上 但是这不是我们想要的
+<Link to='/About/热门电影/10'>About</Link>
+<Route path='/About' component={About}></Route>
+
+//在匹配规则时加exact就不会被模糊匹配了 是精确匹配 同时我们还需要用:修饰符占坑 表示这里是参数
+<Route path='/About/:type/:id' component={About} exact></Route>
+```
+
+### 13.3 获取路由参数
+
++ 通过:占位符方式传参.
+  + 展示哪个组件就在哪个组件的内部通过`this.props.match.params.参数名`获取 参数值,东西都在this.props内
+  + 注意: 如果在大组件内是获取不到的 需要在对应小组件内获取
+
+![image-20200101220854416](C:\Users\35614\AppData\Roaming\Typora\typora-user-images\image-20200101220854416.png)
+
+
+
+# 14. ant design 组件库
+
++ **介绍:** ant design是基于React的组件库,比较成熟, 基于vue的ant design组件库也有
+
++ **安装**
+
+```bash
+$ cnpm install antd --save
+// 或者
+$ yarn add antd
+```
+
++ 其他使用参考官方文档 (按住ctrl点击跳转)
+
+  [ant design官网](https://ant.design/docs/react/introduce-cn)

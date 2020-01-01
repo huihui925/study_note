@@ -12,11 +12,11 @@
 
 #### React
 
-| `imr→`  | `import React from 'react'`                |
-| ------- | ------------------------------------------ |
-| `imrd→` | `import ReactDOM from 'react-dom'`         |
-| `imrc→` | `import React, { Component } from 'react'` |
-|         |                                            |
+| `imr→`  | `import React from 'react'`                                  |
+| ------- | ------------------------------------------------------------ |
+| `imrd→` | `import ReactDOM from 'react-dom'`                           |
+| `imrc→` | `import React, { Component } from 'react'`                   |
+| `imrr→` | `import { BrowserRouter as Router, Route, Link } from 'react-router-dom'` |
 
 | `rconst→` | `constructor(props) with this.state`          |
 | --------- | --------------------------------------------- |
