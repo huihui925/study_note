@@ -4,6 +4,11 @@
 
 搭建react项目的脚手架 创建一项目文件夹my-app也可自定义其他 第一次安装速度慢 但是安装一次后再搭建就特别快 因为有缓存
 
+```sh
+构建一个my-app的项目
+npx create-react-app my-app
+```
+
 **2.** `cd my-app`
 
 进入到项目文件夹里
@@ -276,91 +281,160 @@ React的`state`相当于就是vue中的`data`,`props`相当于vue中的`props`
   + <font color=red>props只读 不可改变</font> , 在`constructor`中`props`不能通过`this.props`获取,只能通过形参`props`直接使用`props` 不用`this`
 + <font color=red>所有 React 组件都必须像纯函数一样保护它们的 props 不被更改。</font>
 
-# 扩展/context特性
+# 7. context类似数据共享仓库 局部全局数据
 
-记住一串单词组合`getChildContextTypes`
-前3个、后3个、后两个
-一个方法、两个静态属性
+> 场景 : 当组件嵌套过多,最底层组件想使用顶层组件的数据时,一层层传递比较麻烦,所以这里用context.
+>
+> 作用 : 可以不通过层层传递的就能让任意子孙组件直接拿到顶层组件的数据
 
-> 场景: 当组件多层嵌套时一层层传递数据比较麻烦,所以可以用contex
->
-> 使用:
->
-> ​		1.引入类型校验包
->
-> ​		2.在父组件定义普通function固定名getChildContext,返回共享数据对象
->
-> ​		3.在父组件定义静态属性childContextTypes,进行类型校验,必须写
->
-> ​		4.在子组件定义静态属性contextTypes,进行类型校验,若和父组件定义的类型不同会警告提示,必须写
->
-> ​        5.通过this.context.名字 使用
->
-> 注意:使用时有一个方法 两静态属性 名字都不同 根据上面口诀记忆 记一串单词 分别取前3个、后3个、后两个即可
->
-> 使用次数:要进行类型校验还是麻烦 所以用得很少 需了解有这个东西 使用的时候再看笔记
++ **步骤使用**
 
-```jsx
-import React, { Component } from 'react'
-import ReactTypes from 'prop-types'
+  + **方法一:**
 
-//最外层父组件
-export default class Index extends Component {
-   constructor(props) {
-    super(props)
+    1. `React.createContext('我是默认值')`执行此方法将创建并返回一个`context`对象,参数一是默认值,当`MyContext.Provider`未提供value值时获取的数据显示undefined,当未写`MyContext.Provider`标签就直接使用`MyContext.Consumer`时,会使用默认值
 
-    this.state = {
-      color: 'red'
+    ```jsx
+    //因要多次使用到此context 所以单独建立为MyContext.jsx文件导出
+    import React from 'react'
+    const MyContext = React.createContext('我是默认值')
+    export default MyContext
+    ```
+
+    2. `Provider`译提供者,即提供传递的数据,用`MyContext.Provider`标签包裹住子组件,则被包裹的子孙组件都能拿到传递的数据,唯一属性value的值为传递的数据,可以是字符串 对象等.
+
+       一个 Provider 可和多个消费组件有对应关系。多个 Provider 也可嵌套使用，里层的会覆盖外层的数据. 
+
+       当 Provider 的 `value` 值发生变化时，它内部的所有消费组件都会重新渲染。Provider 及其内部 consumer 组件都不受制于 `shouldComponentUpdate` 函数，因此当 consumer 组件在其祖先组件退出更新的情况下也能更新。通过新旧值检测来确定变化.
+
+    ```jsx
+    //顶层组件
+    import MyContext from './MyContext'
+    export default class Index extends Component {
+      render() {
+        return (
+            <MyContext.Provider value='哈哈哈'>
+              <Sub></Sub>
+            </MyContext.Provider>
+        )
+      }
+    }
+    ```
+
+    ​	3.先引入`MyContext`再写`MyContext.Consumer`标签 , `Consumer` 译消费者, 标签内是`{function}` 此`function`的形参value将接收到`context`传递的数据,方法内`return`要渲染的元素,这样元素在方法内就可以直接使用value数据.
+
+    ```jsx
+    //子孙组件
+    import React, { Component } from 'react'
+    import MyContext from './MyContext'
+    export default class sub extends Component {
+        render() {
+            return (
+                <MyContext.Consumer>
+                    {value =>(
+                    <h1>
+                        {value}
+                    </h1>
+                    )}
+                </MyContext.Consumer>
+            )
+        }
+    ```
+
+    
+
+    ==**缺点 :**== 因是标签形式,所以使用数据只能在标签内使用,无法直接在其他function中使用,有局限性.
+
+    ==**优点 :**==  一个组件可以消费多个 context, 组件会从组件树中找到离自身最近的那个匹配的 `Provider` 中，然后使用它的值。
+
+    ```jsx
+    //消费多个context 例子:
+    return (
+        <ThemeContext.Consumer>
+          {theme => (
+            <UserContext.Consumer>
+              {user => (
+                <ProfilePage user={user} theme={theme} />
+              )}
+            </UserContext.Consumer>
+          )}
+        </ThemeContext.Consumer>
+      );
+    ```
+
+
+
++ **方法二:**
+
+  1-2步和方法一中使用一样,第3步不同
+
+  3.将`MyContext`赋值给class的静态属性`contextType`,可通过`this.context`在任何生命周期中访问到它，包括 render 函数中。
+
+  ==**优点:**== 使用范围广
+
+  ==**缺点:**== 不能用此方法同时消费多个`context`,因`contextType`只能指向一个`context`对象,如果想将多个`context`对象装在一个obj { }里再赋值给`contextType` 行不通
+
+  ```jsx
+  import React, { Component } from 'react'
+  import MyContext from './MyContext'
+  export default class sub extends Component {
+      static contextType = MyContext
+      render() {
+          return (
+              <h1>
+                  {this.context}
+              </h1>
+          )
+      }
+  }
+  ```
+
++ **注意事项**
+
+  因为 context 会使用参考标识（reference identity）来决定何时进行渲染，这里可能会有一些陷阱，当 provider 的父组件进行重渲染时，可能会在 consumers 组件中触发意外的渲染,因当 Provider 的 `value` 值发生变化时，它内部的所有消费组件都会重新渲染.举个例子，当每一次 Provider 重渲染时，以下的代码会重渲染所有下面的 consumers 组件，因为 `value` 属性总是被赋值为新的对象：
+
+  ```jsx
+  //父组件重新渲染时 执行render函数 若value是一个{}引用值 则每次渲染时值都不同 因{}不等于{}
+  class App extends React.Component {
+    render() {
+      return (
+        <Provider value={{something: 'something'}}>
+          <Toolbar />
+        </Provider>
+      );
     }
   }
-    //1.定义一个function 名字固定getChildContext,里面返回一个对象 这个对象的数据就是要共享的数据
-    getChildContext(){
-        return {
-            color:this.state.color
-        }
-    }
-    //2.导入类型校验包 定义静态属性childContextTypes 属性名固定 然后对所传数据进行校验 这步是必须的
-    static childContextTypes = {
-        color:ReactTypes.string
-    }
-    render() {
-        return (
-            <div>
-                <h1>我是父组件</h1>
-                <Index1></Index1>
-            </div>
-        )
-    }
-}
-//中间子组件
-class Index1 extends Component {
-    render() {
-        return (
-            <div>
-                <h5>我是子组件</h5>
-                <Index2></Index2>
-            </div>
-        )
-    }
-}
-//最内层孙组件
-class Index2 extends Component {
-    //3.使用时对所传数据类型校验 这步是必须的 不校验得不到数据 若校验出错会警告提示
-    static contextTypes = {
-        color:ReactTypes.string
-    }
-    render() {
-        return (
-            <div>
-                {/* 4.直接this.context.名字使用 */}
-                <h3 style={{color:this.context.color}}>我是孙子组件</h3>
-            </div>
-        )
-    }
-}
-```
+  ```
 
+  为了防止这种情况，将 value 状态提升到父节点的 state 里：
 
+  ```jsx
+  //组件的constructor只在创建时调用,若不通过this.setState改变值,那此值就不会变,render时不会影响此值.那么Provider内的value指向 不变 就不会重新渲染消费组件
+  class App extends React.Component {
+    constructor(props) {
+      super(props);
+      this.state = {
+        value: {something: 'something'},
+      };
+    }
+  
+    render() {
+      return (
+        <Provider value={this.state.value}>
+          <Toolbar />
+        </Provider>
+      );
+    }
+  }
+  ```
+  
+  ```jsx
+  //不会重新渲染 因为:
+  const a = {name:123}
+  console.log(this.a == this.a)//true
+  console.log({name:123} == {name:123})//false
+  ```
+  
+  
 
 # 7. 单独提取组件
 
@@ -850,7 +924,7 @@ class Index2 extends Component {
      import { HashRouter as Router, Route, Link } from 'react-router-dom'
      ```
 
-     - `HashRouter`是路由的根容器 一个网页只需要一个路由根容器 根容器内只能有唯一一个根元素 用根容器包裹元素就相当于启动路由了
+     - `HashRouter`是路由的根容器 一个网站只需要一个路由根容器(这里是一个网站 而不是网页) 根容器内只能有唯一一个根元素 用根容器包裹元素就相当于启动路由了
 
      - ` Route`路由匹配规则,里面有两个重要属性`path`和`component`前面是匹配路径 后面是匹配规则 都是小写的 有时候编译器快捷提示是大写 注意了
 
@@ -858,7 +932,7 @@ class Index2 extends Component {
 
      - `Link`相当于vue中的`router-link`
 
-     注意: 这里匹配路由是自动接到后面的路径,不会覆盖页面内容,和vue中不同,至于覆盖的方式待后续了解.
+     注意: 这里匹配路由不会覆盖页面内容,和vue中不同,至于覆盖的方式待后续了解.
 
      ```jsx
      import React, { Component } from 'react'
@@ -904,12 +978,51 @@ React中的路由匹配是模糊匹配,只要有一部分匹配就可以展示�
 + 通过:占位符方式传参.
   + 展示哪个组件就在哪个组件的内部通过`this.props.match.params.参数名`获取 参数值,东西都在this.props内
   + 注意: 如果在大组件内是获取不到的 需要在对应小组件内获取
+  + ==在浏览器中有`window.location`可以任何页面获取当前页面的url地址==
 
 ![image-20200101220854416](C:\Users\35614\AppData\Roaming\Typora\typora-user-images\image-20200101220854416.png)
 
 
 
-# 14. ant design 组件库
+# 14. 获取ajax数据
+
++ #### fetch受跨域限制 不推荐
+
+  + 在React中可以通过fetch API获取数据,fetch译取得 拿到 ,fetch API是基于Promise封装的
+  + 使用方法
+
+  ```jsx
+  //fetch是一个函数 函数调用第一个参数是url获取数据的地址  第一个.then 获取Response对象 Response.json()返回一个Promise 将它return出去 第二个.then获取到的data就是数据
+     
+  	fetch('../data/MenuData copy')
+          .then(response=>response.json())
+          .then(data=>{
+        		console.log(data)
+     		 })
+  ```
+
+  ==*注意： 默认的 window.fetch 受到跨域限制，无法直接是使用，这时候，我们使用 第三方包 fetch-jsonp 来发送 JSONP 请求,在github下载，它的用法，和 浏览器内置的 fetch 完全兼容*==
+
+  
+
++ #### fetch-jsonp(发跨域请求)
+
+  + [下载和使用文档](https://github.com/camsong/fetch-jsonp) 
+
+  + 使用方法(下载包.导入,直接用,用法和fetch完全相同,具体看文档)
+
+    ```jsx
+    import fetchJsonp from 'fetch-jsonp'
+    fetchJsonp('https://douban.uieee.com/v2/movie/in_theaters')
+          .then(response => response.json())
+          .then(data => {
+            console.log(data);
+          })
+    ```
+
+    
+
+# 15. ant design 组件库
 
 + **介绍:** ant design是基于React的组件库,比较成熟, 基于vue的ant design组件库也有
 
