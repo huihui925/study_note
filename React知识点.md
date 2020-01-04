@@ -16,8 +16,13 @@ npx create-react-app my-app
 **3.**`npm run start/yarn start`<font color=red>(推荐)</font>
 
 + 运行项目 类似开启服务 如果启动后自动打开浏览器就表成功  推荐使用`yarn start`
-
 + 在打开网页时不能直接点击浏览器打开 要`yarn start`运行 打开
+
+>脚手架什么都安装好配置好的,不过今天打包时scss文件不能打包 提示缺少node-sass 根据提示运行`yarn add node-sass`安装即可 配置好了的 一般别动脚手架
+>
+>
+
+
 
 # **2. 虚拟DOM**
 
@@ -584,7 +589,7 @@ React的`state`相当于就是vue中的`data`,`props`相当于vue中的`props`
 
 + **解决方案 ==( 重要 )==**
 
-  1. 在webpack中配置,`css-loader`后`?`接固定参数'modules'表为普通css样式表启动模块化(模块有作用域) 脚手架已配置好不需手动配置(这里将css样式表模块化 但是对安装到node_moduls的第三方包不模块化 所以正常使用可不担心)
+  1. 在webpack中配置,`css-loader`后`?`接固定参数'modules'表为普通css样式表启动模块化(模块有作用域) 脚手架已配置好不需手动配置(这里将css样式表模块化 但是对安装到node_moduls的第三方包不模块化 所以正常使用可不担心 脚手架的配置不会对第三方包模块化 若自己配会对第三方模块化)
 
   ![image-20191230202804401](C:\Users\35614\AppData\Roaming\Typora\typora-user-images\image-20191230202804401.png)
 
@@ -691,7 +696,7 @@ React的`state`相当于就是vue中的`data`,`props`相当于vue中的`props`
 4. 当组件状态更新时,render函数会重新执行并渲染,若是挂载到同一DOM节点上 只会有唯一的class组件的实例被创建使用,之前的组件会卸载.
 
 
-5. State的更新是异步的,如果在同一事件函数中多次调用setState()不会执行的时候就马上更新而是当事件函数执行结束后一次性渲染 所以setState()注意写的顺序 如果是相同key 后面的会覆盖前面的 且不要在setState()内部用this.State 因为此结果不会实时更新 放回调函数是因为执行结束(执行到函数最后一步)想一次性渲染也没办法 因为它是回调 你不知道什么时候执行完 就不会等待 进入回调队列中 轮到它就立即执行并渲染
+5. this.setState是异步的,State的更新是异步的,如果在同一事件函数中多次调用setState()不会执行的时候就马上更新而是当事件函数执行结束后一次性渲染 所以setState()注意写的顺序 如果是相同key 后面的会覆盖前面的 且不要在setState()内部用this.State 因为此结果不会实时更新 放回调函数是因为执行结束(执行到函数最后一步)想一次性渲染也没办法 因为它是回调 你不知道什么时候执行完 就不会等待 进入回调队列中 轮到它就立即执行并渲染
 
 ![image-20191229130052528](C:\Users\35614\AppData\Roaming\Typora\typora-user-images\image-20191229130052528.png)
 
@@ -738,7 +743,7 @@ React的`state`相当于就是vue中的`data`,`props`相当于vue中的`props`
 
   - **组件运行阶段**：也有一个显著的特点，根据组件的state和props的改变，有选择性的触发0次或多次；
 
-  > ==componentWillReceiveProps:== 父组件给子组件传递的值若更改,则会触发此函数,此函数只有父组件传递的值更改才会被触发,其他时候都不会触发,通常所说父组件传递的props属性改变,这里的props属性不是指父组件传的它的props而是指它传的任意东西,我们接收到的一切东西都是props.
+  > ==componentWillReceiveProps:== 父组件给子组件传递的值若更改或路由更改(开启路由后可通过this.props.match获取路由参数 若路由参数改了 相当于props也改了) 会触发函数 因这些都和props有关,只要props改了,就会触发此函数,,通常所说父组件传递的props属性改变,这里的props属性不是指父组件传的它的props而是指它传的任意东西,我们接收到的一切东西都是props.
   >
   > 在此函数直接this.props获取的是旧的props数据 若想获取新的需要通过参数列表nextProps获取
   >
@@ -918,7 +923,7 @@ React的`state`相当于就是vue中的`data`,`props`相当于vue中的`props`
 
 2. 基本使用
 
-   + 引入包  需要导出这三个东西
+   + 引入包  需要导出这三个东西 (还可导出Switch 见13.2路由匹配参数)
 
      ```jsx
      import { HashRouter as Router, Route, Link } from 'react-router-dom'
@@ -930,10 +935,14 @@ React的`state`相当于就是vue中的`data`,`props`相当于vue中的`props`
 
        `Route`有两个身份 是匹配规则同时也是坑,在vue中坑是用`route-view`代替 但是这里是一个Route一个坑
 
+       路由匹配是模糊匹配,只要有一部分匹配就可以展示对应路由组件
+
+       哪怕为 路由启用了` exact `精确匹配模式，也会从上到下，把所有的 路由规则匹配一遍
+
      - `Link`相当于vue中的`router-link`
-
+     
      注意: 这里匹配路由不会覆盖页面内容,和vue中不同,至于覆盖的方式待后续了解.
-
+     
      ```jsx
      import React, { Component } from 'react'
      import { HashRouter as Router, Route, Link } from 'react-router-dom'
@@ -962,7 +971,9 @@ React的`state`相当于就是vue中的`data`,`props`相当于vue中的`props`
 
 ### 13.2 路由匹配参数
 
-React中的路由匹配是模糊匹配,只要有一部分匹配就可以展示对应路由组件,但是一般我们都需要精确匹配 所以可以在设置Route匹配规则时 添加第三个参数 exact 译精确,表示精确匹配
+#### exact精确匹配
+
++ React中的路由匹配是模糊匹配,只要有一部分匹配就可以展示对应路由组件,但是一般我们都需要精确匹配 所以可以在设置Route匹配规则时 添加第三个参数 exact 译精确,表示精确匹配
 
 ```jsx
 //像这种只匹配一部分的也可以匹配上 但是这不是我们想要的
@@ -973,14 +984,63 @@ React中的路由匹配是模糊匹配,只要有一部分匹配就可以展示�
 <Route path='/About/:type/:id' component={About} exact></Route>
 ```
 
-### 13.3 获取路由参数
+#### witch 只匹配一个路由
+
++ **注意：**哪怕为 路由启用了 exact 精确匹配模式，也会从上到下，把所有的 路由规则匹配一遍
+
+```jsx
+//如果url路由为 /movie/detail/2158490
+
+//那么下面这两个都会匹配上 但是我们只想匹配一个不想两个都匹配 可是哪怕精确模式也会从上到下把所有路由规则都匹配 那这里只能用Switch
+<Route exact path="/movie/detail/:id" component={MovieDetail}></Route>
+<Route exact path="/movie/:type/:page" component={MovieList}></Route>
+```
+
++ **Swith作用:**在js中有个`switch case`用了`breack`后是只匹配一个就不匹配下一个了 这里的`Switch `类似, 能够指定，如果前面的路由规则优先匹配到了，则放弃匹配后续的路由
+
+  ```jsx
+  //用法 先将Switch导入 再用Switch将对应匹配规则包裹 表示匹配了一个就不匹配下一个
+  //导入路由相关组件
+  import { Switch } from 'react-router-dom'
+  //用组件将相关匹配规则包裹起来
+  <Switch>
+    <Route exact path="/movie/detail/:id" component={MovieDetail}></Route>
+    <Route exact path="/movie/:type/:page" component={MovieList}></Route>
+  </Switch>
+  ```
+
+  
+
+### 13.3 获取路由参数 url地址
 
 + 通过:占位符方式传参.
   + 展示哪个组件就在哪个组件的内部通过`this.props.match.params.参数名`获取 参数值,东西都在this.props内
-  + 注意: 如果在大组件内是获取不到的 需要在对应小组件内获取
-  + ==在浏览器中有`window.location`可以任何页面获取当前页面的url地址==
+  + 注意: 在大组件内是获取不到的 展示哪个组件 就在哪个组件内获取(好像是因为传递了属性 把props规定死了所以才拿不到 可以试试不规定死 或者把值`this.props.match.params`传递过去)
+  + ==在浏览器中有`window.location`可以任何页面获取当前页面的url地址== 操作BOM 尽量少用  偶尔可以
 
 ![image-20200101220854416](C:\Users\35614\AppData\Roaming\Typora\typora-user-images\image-20200101220854416.png)
+
++ 前面提到的生命周期函数`componentWillReceiveProps`是props改变后就会触发此函数,当==组件未变 路由改变时 会触发此函数== 因可通过`this.props.match.params`获取路由参数
+
+### 13.4 跳转新页面 编程式导航
+
+##### 跳转页面
+
+==this.props.history.push('path')==
+
+> 场景: 当点击页码跳转时有两种方法 一种路由不变只获取新数据( 适用于url和页码无关的时候 )  另一种url有页码信息 那么数据变了假如是第二页数据 url还显示的第一页 此时就需要我们改变跳转url了
+
++ 通过`window.location.href="path"`可以跳转页面 这是浏览器的操作BOM方法 不推荐
+
++ 在React中推荐通过路由实现编程式导航  `this.props.history.push('path')` 参数是要跳转的路径  ,例`this.props.history.push('/login/1')` 在大组件内是获取不到的 展示哪个组件 就在哪个组件内通过`this.prop`获取`history`
+
+  
+
++ 前面提到的生命周期函数`componentWillReceiveProps`是props改变后就会触发此函数,当组件未变 路由改变时 路由改变 就会触发函数 因可通过`this.props.match.params`获取路由参数 所以比较有用
+
+##### 返回按钮 返回上一步
+
+通过`this.props.history.go(-1) `可以实现后退返回上一步
 
 
 
@@ -1037,3 +1097,13 @@ $ yarn add antd
 + 其他使用参考官方文档 (按住ctrl点击跳转)
 
   [ant design官网](https://ant.design/docs/react/introduce-cn)
+
++ **<font size=5>Loading转圈圈加载案例 使用思路</font>** 
+
+  例如Loading转圈圈加载提示的使用.  当state状态改变即值改变时会重新render.
+
+  在state中设置flag为true 当为true时 render渲染转圈加载的提示内容
+
+  发ajax请求 成功时将flag设置为false  此时设置后state状态改变会重新渲染执行render函数 render此时判断flag为flase就渲染数据相关的页面内容 
+
+  这样就达到了一个好的效果 转圈提示比页面一片空白好 给用户好的体验
