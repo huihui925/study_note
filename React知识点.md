@@ -1,12 +1,18 @@
+
+
 # 1. 起步-create-react-app使用
 
 **1.什么是create-react-app**
 
 搭建react项目的脚手架 创建一项目文件夹my-app也可自定义其他 第一次安装速度慢 但是安装一次后再搭建就特别快 因为有缓存
 
+构建一个my-app的项目 运行命令
+
 ```sh
-构建一个my-app的项目
+//npm下载方式
 npx create-react-app my-app
+//yarn下载方式
+yarn create react-app my-app
 ```
 
 **2.** `cd my-app`
@@ -859,13 +865,17 @@ React的`state`相当于就是vue中的`data`,`props`相当于vue中的`props`
 
     + componentWillUnmount()
 
-# 12. 获取当前元素
+# 12. refs 获取当前元素
+
+refs有三种方法 字符串 -> 回调 -> createRef  左旧右新 推荐使用新的
+
+#### 12.0 e.target
 
 + 通过事件e获取
 
   触发事件时通过`e.target`获取,若元素为input,想获取value则:`e.targer.value`
 
-+ 通过ref获取
++ 通过ref获取==(字符串方法已淘汰)==
 
   + 在vue中也有ref,回顾vue中是:
 
@@ -886,7 +896,7 @@ React的`state`相当于就是vue中的`data`,`props`相当于vue中的`props`
 
 综上:两种方法自行选择
 
-+ 案例 :
++ 案例 :  ==通过refs获取的value值是string类型的 可以parseInt()  或者*1==
 
   在input上直接设置value值 会导致input框只读 且会报警告
 
@@ -911,6 +921,149 @@ React的`state`相当于就是vue中的`data`,`props`相当于vue中的`props`
     //绑定onChange事件,让事件一发生就设置文本内容,通常value都是从state中获取数据 所以设置也是setState({})
     ```
 
+#### 12.1 字符串 最早方式
+
+dom节点上使用，通过this.refs[refName]来引用真实的dom节点
+
+```jsx
+<input ref="inputRef" /> //this.refs['inputRef']来访问
+```
+
+#### 12.2 回调函数  其次方式
+
+ React 支持给任意组件添加特殊属性。ref 属性接受一个回调函数，它在组件被加载或卸载时会立即执行。
+
+- 当给 HTML 元素添加 ref 属性时，ref 回调接收了底层的 DOM 元素作为参数。
+- 当给组件添加 ref 属性时，ref 回调接收当前组件实例作为参数。
+- 当组件卸载的时候，会传入null
+- ref 回调会在componentDidMount 或 componentDidUpdate 这些生命周期回调之前执行。
+
+```jsx
+<input ref={(input) => {this.textInput = input;}} type="text" />   //HTML 元素添加 ref 属性时
+```
+
+```jsx
+<CustomInput ref={(input) => {this.textInput = input;}} />   //组件添加 ref 属性
+```
+
+#### 12.3 React.createRef() 最新方式
+
+`React.createRef` 创建一个能够通过 ref 属性附加到 React 元素的 `ref`
+
+ 在React 16.3版本后，使用此方法来创建ref。将其赋值给一个变量，通过ref挂载在dom节点或组件上，该ref的current属性
+ 将能拿到dom节点或组件的实例
+
+```jsx
+class Child extends React.Component{
+    constructor(props){
+        super(props);
+        this.myRef=React.createRef();// 1.这个变量任意命名
+    }
+    componentDidMount(){
+        console.log(this.myRef.current);// 3. current获取节点或组件 current译当前的
+    }
+    render(){// 2. 这里的名字就是上面React.createRef()后的变量
+        return <input ref={this.myRef}/>
+    }
+}
+```
+
+```jsx
+class MyComponent extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.inputRef = React.createRef();
+  }
+
+  render() {
+    return <input type="text" ref={this.inputRef} />;
+  }
+
+  componentDidMount() {
+    this.inputRef.current.focus();
+  }
+}
+```
+
+**(2)根据ref获取dom**
+
+React提供的这个ref属性，表示为对组件真正实例的引用，其实就是ReactDOM.render()返回的组件实例，但可以通过ReactDOM.findDOMNode(ref)来获取组件挂载后真正的dom节点
+
+```jsx
+var Parent = React.createClass({
+  render: function(){
+    return (
+      <div className = 'parent'>
+        <Child ref = 'child'/>
+      </div>
+    )
+  },
+  componentDidMount(){
+    console.log(this.refs.child); // 访问挂载在组件上ref
+    console.log(ReactDOM.findDOMNode(this.refs.child)); // 访问真正的dom节点
+  }
+})
+
+var Child = React.createClass({
+  render: function() {
+    return (
+        <div ref="test">
+          <a ref="update">更新</a>
+        </div>
+    );
+  }
+});
+```
+
+打印结果
+
+![img](https://upload-images.jianshu.io/upload_images/1728983-f8a30eea45cec128.png?imageMogr2/auto-orient/strip|imageView2/2/w/555/format/webp)
+
+**(3)react-redux使用时利用ref调用子组件方法不可用报错**
+
+在使用react的时候，我们难免会在父组件中调用子组件的方法，我们常用ref调用子组件的方法
+
+如下在父组件中调用子组件的写法
+
+**父组件**
+
+```jsx
+handleShowModalAdd = () => {
+    this.add.handleToggle()//handleToggle为子组件中的方法
+}
+```
+
+```csharp
+<SystemAdd ref={(el) => this.add = el}/>
+```
+
+但是当我们在子组件中使用redux的时候，由于使用connect对子组件进行了包装，会导致获取不到子组件中的方法
+
+下面的是使用redux后的ref使用方法
+
+**父组件**
+
+```jsx
+handleShowModalAdd = () => {
+    this.add.handleToggle()//handleToggle为子组件中的方法
+}
+```
+
+```csharp
+<SystemAdd onRef={(ref) => this.add = ref }/>
+```
+
+**子组件**
+
+```kotlin
+componentDidMount(){
+    this.props.onRef(this)//将组件实例this传递给onRef方法
+}
+```
+
+
+
 # 13. 路由
 
 ### 13.1 基本使用
@@ -926,12 +1079,12 @@ React的`state`相当于就是vue中的`data`,`props`相当于vue中的`props`
    + 引入包  需要导出这三个东西 (还可导出Switch 见13.2路由匹配参数)
 
      ```jsx
-     import { HashRouter as Router, Route, Link } from 'react-router-dom'
+     import { BrowserRouter as Router, Route, Link ，Switch} from 'react-router-dom'
      ```
 
-     - `HashRouter`是路由的根容器 一个网站只需要一个路由根容器(这里是一个网站 而不是网页) 根容器内只能有唯一一个根元素 用根容器包裹元素就相当于启动路由了
+     - `BrowserRouter`是路由的根容器 一个网站只需要一个路由根容器(这里是一个网站 而不是网页) 根容器内只能有唯一一个根元素 用根容器包裹元素就相当于启动路由了
 
-     - ` Route`路由匹配规则,里面有两个重要属性`path`和`component`前面是匹配路径 后面是匹配规则 都是小写的 有时候编译器快捷提示是大写 注意了
+     - ` Route`路由匹配规则,里面有两个属性`path`是匹配路径 `component`展示对应组件
 
        `Route`有两个身份 是匹配规则同时也是坑,在vue中坑是用`route-view`代替 但是这里是一个Route一个坑
 
@@ -941,11 +1094,13 @@ React的`state`相当于就是vue中的`data`,`props`相当于vue中的`props`
 
      - `Link`相当于vue中的`router-link`
      
+     - Switch 见13.2路由匹配参数
+     
      注意: 这里匹配路由不会覆盖页面内容,和vue中不同,至于覆盖的方式待后续了解.
      
      ```jsx
      import React, { Component } from 'react'
-     import { HashRouter as Router, Route, Link } from 'react-router-dom'
+     import { BrowserRouter as Router, Route, Link，Switch } from 'react-router-dom'
      import Home from '../Home'
      import About from '../About'
      import List from '../List'
@@ -959,9 +1114,14 @@ React的`state`相当于就是vue中的`data`,`props`相当于vue中的`props`
                          <Link to='/About'>About</Link>&nbsp;&nbsp;&nbsp;&nbsp;
                          <Link to='/List'>List</Link>&nbsp;&nbsp;&nbsp;&nbsp;
                          <hr/>
-                         <Route path='/Home' component={Home}></Route>
-                         <Route path='/About' component={About}></Route>
-                         <Route path='/List' component={List}></Route>
+                         <Switch>
+                         	<Route path='/Home' component={Home}>
+                         	</Route>
+                         	<Route path='/About' component={About}>
+                         	</Route>
+                         	<Route path='/List' component={List}>
+                        	 	</Route>
+                         </Switch>
                      </div>
                  </Router>
              )
@@ -978,10 +1138,12 @@ React的`state`相当于就是vue中的`data`,`props`相当于vue中的`props`
 ```jsx
 //像这种只匹配一部分的也可以匹配上 但是这不是我们想要的
 <Link to='/About/热门电影/10'>About</Link>
-<Route path='/About' component={About}></Route>
+<Route path='/About' component={About}>
+</Route>
 
 //在匹配规则时加exact就不会被模糊匹配了 是精确匹配 同时我们还需要用:修饰符占坑 表示这里是参数
-<Route path='/About/:type/:id' component={About} exact></Route>
+<Route path='/About/:type/:id' exact component={About}>
+</Route>
 ```
 
 #### witch 只匹配一个路由
@@ -992,8 +1154,10 @@ React的`state`相当于就是vue中的`data`,`props`相当于vue中的`props`
 //如果url路由为 /movie/detail/2158490
 
 //那么下面这两个都会匹配上 但是我们只想匹配一个不想两个都匹配 可是哪怕精确模式也会从上到下把所有路由规则都匹配 那这里只能用Switch
-<Route exact path="/movie/detail/:id" component={MovieDetail}></Route>
-<Route exact path="/movie/:type/:page" component={MovieList}></Route>
+<Route exact path="/movie/detail/:id" component={MovieDetail}>
+</Route>
+<Route exact path="/movie/:type/:page" component={MovieList}>
+</Route>
 ```
 
 + **Swith作用:**在js中有个`switch case`用了`breack`后是只匹配一个就不匹配下一个了 这里的`Switch `类似, 能够指定，如果前面的路由规则优先匹配到了，则放弃匹配后续的路由
@@ -1004,23 +1168,102 @@ React的`state`相当于就是vue中的`data`,`props`相当于vue中的`props`
   import { Switch } from 'react-router-dom'
   //用组件将相关匹配规则包裹起来
   <Switch>
-    <Route exact path="/movie/detail/:id" component={MovieDetail}></Route>
-    <Route exact path="/movie/:type/:page" component={MovieList}></Route>
+    <Route exact path="/movie/detail/:id" component={MovieDetail}>
+    </Route>
+    <Route exact path="/movie/:type/:page" component={MovieDetail}>
+    </Route>
   </Switch>
   ```
-
+  
   
 
 ### 13.3 获取路由参数 url地址
 
-+ 通过:占位符方式传参.
-  + 展示哪个组件就在哪个组件的内部通过`this.props.match.params.参数名`获取 参数值,东西都在this.props内
-  + 注意: 在大组件内是获取不到的 展示哪个组件 就在哪个组件内获取(好像是因为传递了属性 把props规定死了所以才拿不到 可以试试不规定死 或者把值`this.props.match.params`传递过去)
-  + ==在浏览器中有`window.location`可以任何页面获取当前页面的url地址== 操作BOM 尽量少用  偶尔可以
+#### 占位符方式获参params
+
++ 展示哪个组件就在哪个组件的内部通过`this.props.match.params.参数名`获取 参数值,东西都在this.props内
++ 注意: 在大组件内是获取不到的 展示哪个组件 就在哪个组件内获取(好像是因为传递了属性 把props规定死了所以才拿不到 可以试试不规定死 或者把值`this.props.match.params`传递过去)
++ ==在浏览器中有`window.location`可以任何页面获取当前页面的url地址== 操作BOM 尽量少用  偶尔可以
 
 ![image-20200101220854416](C:\Users\35614\AppData\Roaming\Typora\typora-user-images\image-20200101220854416.png)
 
 + 前面提到的生命周期函数`componentWillReceiveProps`是props改变后就会触发此函数,当==组件未变 路由改变时 会触发此函数== 因可通过`this.props.match.params`获取路由参数
+
+#### 字符串get请求获参
+
+前面提到的占位符传参可通过params获取键值对形式参数,但是`to="/account?name=netflix"`这种类型的参数虽然loaction里面可获取但获取到的是一个字符串.还需自己处理字符串取参比较麻烦
+
+==**new URLSearchParams(search)**==    ==<font color=red>**很重要**</font>== ( 浏览器自带的API )
+
+```jsx
+import {useLocation} from "react-router-dom";
+
+let query = new URLSearchParams(useLocation().search);//把location的search字符串传进去
+
+query.get("name")//根据键获取值
+```
+
+#### URLSearchParams接口
+
+https://developer.mozilla.org/zh-CN/docs/Web/API/URLSearchParams官网MDN
+
+这不是redux里的 而是浏览器自带的 刚好知道了这个 所以学习
+
+**`URLSearchParams`** 接口定义了一些实用的方法来处理 URL 的查询字符串。
+
+它是构造函数 new URLSearchParams()返回一个 `URLSearchParams `对象。
+
+```
+方法
+该接口不继承任何属性。
+
+URLSearchParams.append()
+ 插入一个指定的键/值对作为新的搜索参数。
+URLSearchParams.delete()
+ 从搜索参数列表里删除指定的搜索参数及其对应的值。
+URLSearchParams.entries()
+ 返回一个iterator可以遍历所有键/值对的对象。
+URLSearchParams.get()
+ 获取指定搜索参数的第一个值。
+URLSearchParams.getAll()
+ 获取指定搜索参数的所有值，返回是一个数组。
+URLSearchParams.has()
+ 返回 Boolean 判断是否存在此搜索参数。
+URLSearchParams.keys()
+返回iterator 此对象包含了键/值对的所有键名。
+URLSearchParams.set()
+ 设置一个搜索参数的新值，假如原来有多个值将删除其他所有的值。
+URLSearchParams.sort()
+ 按键名排序。
+URLSearchParams.toString()
+ 返回搜索参数组成的字符串，可直接使用在URL上。
+URLSearchParams.values()
+ 返回iterator 此对象包含了键/值对的所有值。
+```
+
+**示例**
+
+```javascript
+var paramsString = "q=URLUtils.searchParams&topic=api"
+var searchParams = new URLSearchParams(paramsString);
+
+for (let p of searchParams) {
+  console.log(p);
+}
+
+searchParams.has("topic") === true; // true
+searchParams.get("topic") === "api"; // true
+searchParams.getAll("topic"); // ["api"]
+searchParams.get("foo") === null; // true
+searchParams.append("topic", "webdev");
+searchParams.toString(); // "q=URLUtils.searchParams&topic=api&topic=webdev"
+searchParams.set("topic", "More webdev");
+searchParams.toString(); // "q=URLUtils.searchParams&topic=More+webdev"
+searchParams.delete("topic");
+searchParams.toString(); // "q=URLUtils.searchParams"
+```
+
+
 
 ### 13.4 跳转新页面 编程式导航
 
@@ -1041,6 +1284,214 @@ React的`state`相当于就是vue中的`data`,`props`相当于vue中的`props`
 ##### 返回按钮 返回上一步
 
 通过`this.props.history.go(-1) `可以实现后退返回上一步
+
+### 13.5 API
+
+在组件内通常可以通过`this.props`获取到`history`  `location` `match`(`params`在match内)  同时在组件内也可通过API获取 目前使用this.props获取 API等效 看个人需求
+
+#### 钩子
+
+React Router附带了一些[挂钩](https://reactjs.org/docs/hooks-intro.html)，可让您访问路由器的状态并从组件内部执行导航。
+
+请注意：您必须使用React> = 16.8才能使用这些钩子中的任何一个！
+
+- [`useHistory`](https://reacttraining.com/react-router/web/api/Hooks/usehistory)
+- [`useLocation`](https://reacttraining.com/react-router/web/api/Hooks/uselocation)
+- [`useParams`](https://reacttraining.com/react-router/web/api/Hooks/useparams)
+- [`useRouteMatch`]
+
+上面四个都从安装包导出的 名字()即可获取到对应的history location等
+
+**useHistory **
+
+```jsx
+import { useHistory } from "react-router-dom";
+
+function HomeButton() {
+  let history = useHistory();
+
+  function handleClick() {
+    history.push("/home");
+  }
+```
+
+**useParams**
+
+`useParams`返回URL参数的键/值对的对象
+
+```jsx
+import {useParams} from "react-router-dom";
+  let { slug } = useParams();
+```
+
+**useLocation**
+
+该`useLocation`挂钩返回[`location`](https://reacttraining.com/react-router/web/api/location)代表当前URL 的对象。您可以将其视为类似于URL更改时`useState`会返回新值的a `location`。
+
+这可能非常有用
+
+```jsx
+import {useLocation} from "react-router-dom";
+let location = useLocation();
+location.pathname
+```
+
+
+
+### 13.6 链接
+
+##### 1. Link的to三种写法
+
+```jsx
+<Link to="/about">About</Link>
+```
+
+```jsx
+<Link to="/courses?sort=name" />
+```
+
+也可传递对象跳转
+
+```jsx
+/*
+pathname：代表链接路径的字符串。
+search：查询参数的字符串表示形式。
+hash：要放入网址中的哈希，例如#a-hash。
+state：传递对象state且url不会显示到url链接上 适合传递多个数据的时候 通过loaction.state获取传过来的state
+*/
+<Link
+  to={{
+    pathname: "/courses",
+    search: "?sort=name",
+    hash: "#the-hash",
+    state: { fromDashboard: true }
+  }}
+/>
+```
+
+##### 2. Link激活时的类名
+
+元素处于活动状态时提供的类。默认给定的类是`active`
+
+可通过[activeClassName：字符串]设置激活时类名
+
+```jSX
+<NavLink to="/faq" activeClassName="selected">
+  FAQs
+</NavLink>
+```
+
+##### 3.Link激活时样式
+
+元素处于活动状态时应用于元素的样式。可通过[activeStyle：对象]设置
+
+```JSX
+<NavLink
+  to="/faq"
+  activeStyle={{
+    fontWeight: "bold",
+    color: "red"
+  }}
+>
+  FAQs
+</NavLink>
+```
+
+### 13.7 Route
+
+##### 1.点Link后展示组件的三方法
+
+**component 方式**  一般用这种方式        ( user是组件名)
+
+```jsx
+ <Route path="/user/:username" component={User} />
+```
+
+**render方式**                   ( 函数,返回一组件,展示此组件 )
+
+在位置匹配时调用此函数,此函数可以访问所有相同的[路线道具](https://reacttraining.com/react-router/web/api/Route/route-props)（匹配，地理位置和历史）作为`component`渲染道具。
+
+```jsx
+<Route path="/home" render={() => <div>Home</div>} />
+```
+
+将routeProps扩展到渲染组件中 给组件传参
+
+```jsx
+<Route
+      {...rest}
+      render={routeProps => (
+        <FadeIn>
+          <Component {...routeProps} />
+        </FadeIn>
+      )}
+    />
+```
+
+**警告：** ``优先级高，``因此请不要在同一个中使用两者\<Route>。
+
+**children方式** 自行看文档
+
+### 13.8 history
+
+可通过`this.props.history`访问
+
+==作用: 主要做页面url跳转的 , location的东西一般不在这获取因为location是可变的怕出错 最好从location专门提供的方法改 见下面==
+
+`history` 对象通常具有以下属性和方法：
+
+- `length` -（数字）历史记录堆栈中的条目数
+- `action`- （字符串）当前动作（`PUSH`，`REPLACE`，或`POP`）
+- `location`-（对象）当前位置。可能具有以下属性：
+  - `pathname` -（字符串）URL的路径
+  - `search` -（字符串）URL查询字符串
+  - `hash` -（字符串）URL哈希片段
+  - `state`-（对象）特定于位置的状态，例如`push(path, state)`在将该位置推入堆栈时所提供的状态。仅在浏览器和内存历史记录中可用。
+- `push(path, [state])` -（功能）将新条目推入历史记录堆栈 简单来说就是跳转到新页面==(用得多)==
+- `replace(path, [state])` -（函数）替换历史记录堆栈上的当前条目
+- `go(n)`-（函数）通过`n`条目在历史记录堆栈中移动指针 若1则前进一个 -2后退两个==(用得多)==
+- `goBack()` -（功能）等同于 `go(-1)`
+- `goForward()` -（功能）等同于 `go(1)`
+- `block(prompt)`-（功能）防止导航（请参阅[历史记录文档](https://github.com/ReactTraining/history#blocking-transitions)）
+
+注意:历史对象是可变的。因此，建议this.props.location在组件内访问,而不是从`history.location`
+
+### location
+
+可通过`this.props.location`访问
+
+==作用: 用于获取url位置( 仅params参数除外 需单独用下方match获取)==
+
+location在`history`也可得到 但是不推荐,因为历史对象是可变的。因此，建议`this.props.location`在组件内访问,而不是从`history.location`
+
+位置。看起来像这样：
+
+```jsx
+{
+  key: 'ac3df4', // not with HashHistory!
+  pathname: '/somewhere',
+  search: '?some=search-string',
+  hash: '#howdy',
+  state: {
+    [userDefined]: true//其实也就是前面提到的传递一对象过来在这里获取
+  }
+}
+```
+
+### match
+
+可通过`this.props.match`访问
+
+一个`match`对象包含有关如何信息``相匹配的URL。`match`对象包含以下属性：
+
+- `params` -（对象）从对应于路径动态段的URL解析的键/值对 ==(这个用得多 params从这里获取)==
+- `isExact`-（布尔值）`true`如果整个URL都匹配（没有结尾字符）
+- `path`-（字符串）用于匹配的路径模式。用于构建嵌套的``s
+- `url`-（字符串）URL的匹配部分。用于构建嵌套的``s
+
+
+
+
 
 
 
