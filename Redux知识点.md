@@ -205,7 +205,7 @@ redux文件夹(里面有这四个文件 名字都固定的):
       }
   }
   ```
-  
+
 + ==**6. 对以上代码优化**==
 
   + **6.1 actions.js**
@@ -260,6 +260,8 @@ redux文件夹(里面有这四个文件 名字都固定的):
 
 # 七. react-redux插件
 
+
+
 #### 7.1 了解
 
 是react插件库
@@ -279,14 +281,14 @@ yarn add react-redux
 #### 7.3 React-Redux将所有组件分为两大类
 
 +  **UI组件**
-  + 只负责UI的呈现 不带有任何业务逻辑
-  + 通过props接收数据(一般数据和函数)
-  + 不使用任何Redux的API
-  + 一般保存在`components`文件夹下
-+ **容器组件**
-  + 负责数据和业务逻辑 不负责UI的呈现
-  + 使用Redux的API
-  + 一般保存在`containers`文件夹下
+   + 只负责UI的呈现 不带有任何业务逻辑
+   + 通过props接收数据(一般数据和函数)
+   + 不使用任何Redux的API
+   + 一般保存在`components`文件夹下
++  **容器组件**
+   + 负责数据和业务逻辑 不负责UI的呈现
+   + 使用Redux的API
+   + 一般保存在`containers`文件夹下
 
 #### 7.4 使用
 
@@ -389,9 +391,113 @@ ReactDOM.render(<Provider store={ store }><Counter /></Provider>, document.getEl
 
   简洁语法可以直接指定为actions对象或包含多个action方法的对象
 
+# 八. redux异步编程
+
+> 我们经常通过ajax请求数据, 是在react内发异步请求进行异步操作,但是正常来说异步请求应该在redux中做.但是redux不支持异步操作 如果我们想进行此操作就要用到插件
+
+#### 8.1 下载redux插件(异步中间件)
+
+这是redux的插件,不是react的,所谓中间件就是扩展当前库功能的插件.
+
+```js
+npm i redux-chunk -S
+```
+
+#### 8.2 基本使用
+
+在store.js中
+
+==注意:这里安装后引入redux-chunk 使用却会报错  原因待查==
+
+```js
+//redux内还可引入applyMiddleware表应用中间件 这是个函数
+import { createStore,applyMiddleware } from "redux";
+import chunk from 'redux-chunk'
+//引入后创建store的第二个参数传函数执行 参数是chunk 本来redux不支持异步操作的但是这么写后就支持异步操作了 也必须这么写
+export default createStore(handleTodo,applyMiddleware(chunk))
+```
+
+在actions.js中
+
+```javascript
+//同步的action返回一个对象
+//异步的action返回一个函数
+export const addAsync = title => {
+//return的函数内进行异步操作 再dispatch分发事件 每一个异步action最好都有一个同步action 异步操作是等到异步完成再通知 而同步是立即通知
+    return (dispatch) => {
+        setTimeout(() => {
+            dispatch(add(title))
+        }, 1000)
+    }
+}
+```
+
+# 九. 暴露多个reducer
+
+```javascript
+import { createStore } from "redux";
+import {acount} from './reducers'
+const store = createStore(acount)
+```
+
+创建store的时候会为createStore传的第一个参数是reducer函数,一个应用只能有一个store 那么当有多个reducer的时候怎么办 ?
+
+在redux中还可引入combineReducers 它是一个函数 combine译整合 即将多个reducer整合到一起
+
+>reducers.js中写
+
+```jsx
+//1.引入
+import { combineReducers } from 'redux'
+//2.在reducer中就不分开导出函数了 而是暴露如下 传入对象 把reducer函数名字丢进去 属性值和属性名最好一致防止出错
+export default combineReducers({
+    handleTodo,
+    Todo
+})
+```
+
+>store.js写
+
+```javascript
+//此时传的就是整合后的 这样导致的结果是直接getState()获取到的state是一个对象 而对象属性名是函数名 值就是对应reducer调用后返回的新state
+//简单来说如果再用state 就必须state.reducer的函数名获取对应值state
+import reducers from './reducers'
+const store = createStore(reducers)
+```
+
+```javascript
+//再获取时就要从对象取 例
+export default connect(
+    (state)=>({number:state.handleTodo}),  //这里也可以直接解构{number:{handleTodo}}
+)(App)
+```
 
 
 
+# 十. 使用redux调试工具
+
+8.1 安装扩展到
+
+![image-20200108103417586](C:\Users\35614\AppData\Roaming\Typora\typora-user-images\image-20200108103417586.png)
+
+8.2 安装工具依赖包
+
+安装工具扩展 再项目运行命令 
+
+```
+npm i redux-devtools-extension -S
+```
+
+8.3 编码
+
+安装后引入 再包裹`applyMiddleware(chunk)`就可以成功调试了
+
+```javascript
+import { createStore,applyMiddleware } from "redux";
+import chunk from 'redux-chunk'
+import {composeWithDevTools} from 'redux-devtools-extensi
+export default createStore( handleTodo,composeWithDevTools( applyMiddleware(chunk) ) )
+```
 
 
 
