@@ -107,7 +107,7 @@ yarn start / npm run start
 fetch(`https://nei.netease.com/api/apimock/da68599b1e25ca4e8c9c1cdddaef9761${url}`, conf)
 ```
 
-设置为变量后在其他文件可以直接使用变量 使用前写/* eslint-disable no-undef */:如下,
+设置为变量后在其他文件可以直接使用变量 使用前写/* eslint-disable no-undef */如下,
 
 ```javascript
 //SERVICE_URL全局变量 不需引入 直接使用  下面这句注释必须写 否则会报错undefined

@@ -2,6 +2,8 @@
 
 # 1. 起步-create-react-app使用
 
+==在使用脚手架时普遍都有配置文件被隐藏的情况 所以需百度搜索 执行特定命令 显示出配置文件 才可修改配置==
+
 **1.什么是create-react-app**
 
 搭建react项目的脚手架 创建一项目文件夹my-app也可自定义其他 第一次安装速度慢 但是安装一次后再搭建就特别快 因为有缓存
@@ -14,6 +16,36 @@ npx create-react-app my-app
 //yarn下载方式
 yarn create react-app my-app
 ```
+
+**1.1 yarn create react-app antd-demo 文件名、目录名或卷标语法不正确 : **
+
+[解决方案参考网站](https://faceghost.com/article/248601)
+
+![image-20200204194424754](C:\Users\35614\AppData\Roaming\Typora\typora-user-images\image-20200204194424754.png)
+
+```shell
+解决办法
+
+第一步
+
+查看出错执行的命令，我的是：
+
+ D:\install\nodejs\node_global\bin\create-react-app
+打开create-react-app.cmd文件
+
+@"%~dp0\C:\Users\admin\AppData\Local\Yarn\Data\global\node_modules\.bin\create-react-app.cmd"   %*
+修改为
+
+@"C:\Users\admin\AppData\Local\Yarn\Data\global\node_modules\.bin\create-react-app.cmd"   %*
+第二步
+
+将create-react-app.cmd加入系统环境变量，不能在执行yarn create react-app antd-demo，这样会覆盖掉create-react-app.cmd文件
+
+修改好环境变量后，新打开一个cmd执行命令
+create-react-app.cmd antd-demo react-app
+```
+
+用此命令创建项目 中间的antd-demo是目录名: ==create-react-app.cmd antd-demo react-app==
 
 **2.** `cd my-app`
 
@@ -83,7 +115,7 @@ const myh = React.createElement('h1',null,'我是一个大大的h1')
    例:
 
    ```javascript
-   const name = ‘张三’’
+   const name = ‘张三’
    
    const element = <h1>{name}</h1> //渲染为const element = <h1>张三</h1>
    ```
@@ -114,7 +146,7 @@ const myh = React.createElement('h1',null,'我是一个大大的h1')
    )
    ```
 
-10. 在js中看到`<h1>我是jsx</h1>`这种 不要想成变成 直接想成对象 因为这就是一个虚拟DOM即js对象
+10. 在js中看到`<h1>我是jsx</h1>`这种 不要想成标签 直接想成对象 因为这就是一个虚拟DOM即js对象
 
     + **数组里面可以直接放对象**
 
@@ -479,40 +511,6 @@ React的`state`相当于就是vue中的`data`,`props`相当于vue中的`props`
     }
     ```
 
-+ 引入组件一般文件后缀不可省略,通常我们都是省略了写的,因为脚手架在webpack内进行了配置
-
-  和modules同级,用于引入文件时不写后缀名,会强制加后缀,查找顺序从左往右,左找不到再右
-
-  ```js
-  resolve:{
-  	extensions：[‘.js’,’.css’,’.json’]
-  }
-  ```
-
-  
-
-+ **文件内必须引入React**
-
-  + 虽然表面上没用到React但是组件依赖React 所以必须引入 否则报错
-
-+ **巧妙导出**
-
-  + 正常情况是直接写组件然后单独导出组件名字 但是可以换种方式 例:
-
-    在写的时候同时导出 function也适用
-
-    ```jsx
-    export default class index extends Component {
-        render() {
-            return (
-                <div>
-                   <h1>要开心</h1>
-                </div>
-            )
-        }
-    }
-    ```
-
 + **如何省略.jsx后缀名**
 
   导入文件时一般后缀名不可省略,但是大多时候我们都省略不写,因为脚手架对webpack进行了如下配置:
@@ -704,7 +702,7 @@ React的`state`相当于就是vue中的`data`,`props`相当于vue中的`props`
 
 5. this.setState是异步的,State的更新是异步的,如果在同一事件函数中多次调用setState()不会执行的时候就马上更新而是当事件函数执行结束后一次性渲染 所以setState()注意写的顺序 如果是相同key 后面的会覆盖前面的 且不要在setState()内部用this.State 因为此结果不会实时更新 放回调函数是因为执行结束(执行到函数最后一步)想一次性渲染也没办法 因为它是回调 你不知道什么时候执行完 就不会等待 进入回调队列中 轮到它就立即执行并渲染
 
-![image-20191229130052528](C:\Users\35614\AppData\Roaming\Typora\typora-user-images\image-20191229130052528.png)
+<img src="C:\Users\35614\AppData\Roaming\Typora\typora-user-images\image-20191229130052528.png" alt="image-20191229130052528" style="zoom:150%;" />
 
 1. 如果想立即拿到State的值,可执行`settate({},callback)`第二个参数是回调,执行此函数时结果是最新的.
 
