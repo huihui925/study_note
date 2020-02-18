@@ -197,6 +197,8 @@ const myh = React.createElement('h1',null,'我是一个大大的h1')
 
 11. <font color=red>jsx里只能有一个根元素</font>  可以包含很多子元素
 
+    正常情况下会用div根元素包裹,但是若不想用div根元素包裹,又想用多个标签 则使用Fragment
+
 12. 假如一个标签里面没有内容，你可以使用 /> 来闭合标签，就像 XML 语法一样：
 
     ![image-20191229124225152](C:\Users\35614\AppData\Roaming\Typora\typora-user-images\image-20191229124225152.png) 
@@ -218,7 +220,22 @@ const myh = React.createElement('h1',null,'我是一个大大的h1')
 
     在jsx内js代码只能写到{}内部 所以哪怕是注释也只能写到{}内部,综上在jsx中推荐用`/**/`注释
 
-   # **5. 元素渲染**
+# 4.1 Fragment包裹元素不渲染自身
+
+jsx里只能有一个根元素 可以包含很多子元素
+
+正常情况下会用div根元素包裹,但是若不想用div根元素包裹,又想用多个标签 则使用Fragment 
+
+```
+<Fragment>
+  <h1>好</h1>
+  <i>hi</i>
+</Fragment>
+```
+
+
+
+   # 5. 元素渲染
 
 1. 和html dom元素不同, React元素是开销极小的普通对象,React元素是通过React DOM渲染为DOM的,React DOM会随时更新DOM来与React元素一致.即当React元素更新时 DOM也会实时更新
 
@@ -684,7 +701,7 @@ React的`state`相当于就是vue中的`data`,`props`相当于vue中的`props`
    }
    ```
 
-   
+   ==以后事件处理函数 建议都用箭头函数 避免出错==
 
 # 11. State & 生命周期
 
