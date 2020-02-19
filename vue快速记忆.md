@@ -447,7 +447,6 @@ this.$http.jsonp(url地址).then(res=>{
 3. 所有被transition包裹的元素都是v-开头设置样式,全都能用,所以可通过name属性 设置v-前缀,例`<transition name='my'> </transition>`后需通过`.my-enter`设置样式 ,将`v-`改为`名字-`,设置后的对应元素需用特有命名设置样式,其他依旧v-,设置哪个就针对哪个.
 
 ```javascript
-
 	<style>
         .v-enter,
         .v-leave-to{
@@ -488,7 +487,6 @@ this.$http.jsonp(url地址).then(res=>{
 >    ==注意:== duration设置时间有限制 只能设置动画默认时间之内的时间 大于默认时间的无效果
 
 ```javascript
-
 <link rel="stylesheet" href="./animate.css">
 
 <transition 
@@ -622,22 +620,22 @@ done: 是函数afterEnter的引用,表立即执行函数,若不调用,而让此�
    ```
 
 3. ```javascript
-     <div id="app">
-       <myh1></myh1>
+   <div id="app">
+     <myh1></myh1>
+   </div>
+    
+   <template id="one">
+     <div>
+       <h1>哈哈</h1>
      </div>
-      
-     <template id="one">
-       <div>
-         <h1>哈哈</h1>
-       </div>
-     </template>
-      
-     <script>
-       //在el控制区域外的template标签内写模板内容，注册组件时写对应的id名
-       Vue.component('myh1', {
-         template: "#one"
-       })
-     </script>
+   </template>
+    
+   <script>
+     //在el控制区域外的template标签内写模板内容，注册组件时写对应的id名
+     Vue.component('myh1', {
+       template: "#one"
+     })
+   </script>
    ```
 
 **推荐方式三，优点不用写字符串内，有代码提示和高亮。**
@@ -675,9 +673,11 @@ done: 是函数afterEnter的引用,表立即执行函数,若不调用,而让此�
     })
 ```
 
-## 组件的data和methods
+## 组件的生命周期
 
-组件有自己的data和methods
+实例相当于大组件,组件相当于小组件,所以组件有自己的`data`,`methods`和生命周期函数,例created等,和实例一样的使用方法
+
+## 组件的data和methods
 
 ### 定义data
 
@@ -836,5 +836,245 @@ const son = {
           console.log(this.$refs.myson)//得到组件 可直接使用组件数据或方法
         }
       },
+```
+
+# 路由
+
+```javascript
+//1.引入路由后会在全局window上挂一个构造函数 需在vue之后引入  
+	<script src="./vue.js"></script>
+	<script src="./vue-router.js"></script>
+
+<body>
+   
+//5.使用 router-link会转为a标签,点击就会跳转路由,router-view是展示路由的坑 即占位符
+  <div id="app">
+    <router-link to='/login'>登录</router-link>
+    <router-link to='/register'>注册</router-link>
+    <router-view></router-view>
+  </div>
+
+  <script>
+// 2.准备两个组件模板对象
+    const login = {template: '<h1>登录页面</h1>'}
+    const register = {template: '<h1>注册页面</h1>''}
+    
+//3.new VueRouter创建路由对象, routes:[]写路由匹配规则,内的每个对象就是一个路由规则,path是匹配的路径,component写展示的对应组件模板对象(变量 不加引号),注意是写模板对象,不是组件名
+    const router = new VueRouter({
+      routes: [
+        { path: '/login', component: login },
+        { path: '/register', component: register },
+      ]
+    })
+
+// 4. 实例上注册router,将router和实例关联,监听路由变化,属性名为router,值是new出来的路由对象故这里简写
+    new Vue({
+      el: '#app',
+      router
+    })
+  </script>
+</body>
+```
+
+## tag渲染指定标签
+
+`router-link`默认渲染为`a`标签,可通过`tag`将其渲染为指定标签
+
+```javascript
+<router-link to='/login' tag='ul'>登录</router-link>
+```
+
+## redirect重定向
+
+`redirect`网页重定向,使一进入网页`/`就直接跳转到`/login`
+
+```javascript
+{ path: '/', redirect: '/login' },
+```
+
+## linkActiveClass路由激活类
+
+路由默认激活类名为`router-link-active`,可用构造函数中属性`linkActiveClass`更改激活类名,可为激活路由设置样式.
+
+```javascript
+const router = new VueRouter({
+      linkActiveClass:'myactive',
+      routes: [
+        { path: '/login', component: login },
+        { path: '/register', component: register },
+      ]
+    })
+```
+
+## 路由组件切换动画
+
+用`transition`将`router-view`包裹,再设置样式
+
+```javascript
+   //style省略...
+	<transition mode="out-in">
+      <router-view></router-view>
+    </transition>
+```
+
+## 获取路由参数的两种方式
+
+### 方式一 : query
+
+> 路由匹配规则不变,直接在`router-link`的`to`中拼接参数,可在钩子函数`created`内通过`this.$route.query`获取
+
+```javascript
+<router-link to='/login?name=zs&age=18'>登录</router-link>
+
+const login = {
+      template: '<h1>登录页面</h1>',
+      created() {
+        console.log(this.$route)//得出结果见下图
+      },
+    }
+
+{ path: '/login', component: login },
+```
+
+如图可通过`this.$route.query得出对应参数`
+
+![image-20200219143628097](C:\Users\35614\AppData\Roaming\Typora\typora-user-images\image-20200219143628097.png)
+
+### 方式二 : params
+
+通过`this.$route.params获取`
+
+```javascript
+<router-link to='/login/zs/18'>登录</router-link>
+
+{ path: '/login/:name/:age', component: login }
+
+```
+
+![image-20200219144418453](C:\Users\35614\AppData\Roaming\Typora\typora-user-images\image-20200219144418453.png)
+
+## 嵌套路由
+
+> 1. 父路由正常写,子路由的的`router-link`和`router-view`写在父路由内
+
+```javascript
+<template id="account">
+    <div> account 
+      <router-link to='/account/login'>login</router-link>
+      <router-link to='/account/register'>register</router-link>
+      <router-view></router-view>
+    </div>
+ </template>
+```
+
+> 2.  写匹配规则时不是直接写同级的,而是父路由匹配规则中有`children`属性,写在这里面
+
+注意 : ==`children`内的path不要加`/`只写`login`==,加了就是默认以根路径开始,不加就会默认接在父路由路径后面,相当于`/account/login`,所以子路由写规则时只写半截,不加`/`,==`link`中就要写全即`to='/account/login'`==
+
+```javascript
+routes: [
+        {
+          path: '/account',
+          component: account,
+          children: [
+            { path: 'login', component: login },
+            { path: 'register', component: register },
+          ]
+        },
+      ]
+```
+
+## 路由的命名空间
+
+> 前面提到的都是一个坑只展示一个组件,若想同时展示多个组件就需要用到命名空间
+
+1. 平时都是`component`展示对应组件,若想同时展示多个组件则用`components`,它是对象,`default`表默认展示的组件,而属性名`left`表命名,值为要展示的组件模板对象.
+
+2. 在`router-view`通过name属性,若不写则展示默认default,若写了,例left则展示属性名为left的.
+
+```javascript
+  <div id="app">
+    <router-view></router-view>
+    <router-view name='left'></router-view>
+    <router-view name='main'></router-view>
+  </div>
+  
+  
+    const header = {
+      template:"<h1>header</h1>"
+    }
+    const left = {
+      template:"<h1>left</h1>"
+    }
+    const main = {
+      template: "<h1>main</h1>",
+    }
+
+    const router = new VueRouter({
+      routes: [
+        {path: '/',components:{
+          default:header,
+          left:left,
+          main:main
+        }},
+      ]
+    })
+```
+
+# watch监听
+
+> 绑定的属性为data中的数据,若数据更改则触发对应函数,不会初始化,不更改就不会执行,
+>
+> 主要是监听路由的改变
+
+1. 监听`data`数据改变,属性省略`this`
+
+```javascript
+<input type="text" v-model='msg'>
+    
+ 	data:{
+        msg:123
+      },
+      watch: {
+        msg(){
+          console.log('msg改变了')
+        }
+      }
+```
+
+2. ==监听路由变化==
+
+`watch`主要是监听路由变化的,同样不要绑定属性不写`this`. 可以直接写`$route`,而`$route.path`是对象下的一个属性,没区别
+
+```javascript
+watch: {
+        '$route.path':function(){
+          console.log(this.$route.path)
+        }
+      }
+```
+
+# computed计算属性
+
+> 1. ==计算属性是自定义属性名然后直接使用,不需在data中定义==,值为`function`,函数内需`return`,使用时直接当属性使用,不能当函数调用
+>
+> 2. 函数内相关联的data数据若发生改变则会触发函数进行计算
+> 3. 计算属性有缓存,若未改变,则直接使用上次的计算结果不会重新计算,利于性能
+> 4. 计算属性有初始化,即第一次进入网页会默认计算一次
+
+```javascript
+	<input type="text" v-model='one'>+
+    <input type="text" v-model='two'>=
+    <input type="text" v-model="full">
+    
+     data:{
+        one:'',
+        two:''
+      },
+      computed: {
+        full(){
+          return this.one +'-'+ this.two
+        }
+      } 
 ```
 
