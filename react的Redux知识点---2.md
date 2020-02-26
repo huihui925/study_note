@@ -1,3 +1,75 @@
+# 0.第0项老师写的,我只复制
+
+> * 同时添加react-redux组件和redux组件( 这里react-redux是对redux的部分封装,但是redux也需要用到,所以两个都下载 )
+>
+> * 完整使用
+>
+>   ==这里是整个流程,写得简陋,适合快速记忆,如果看不懂就看下面自己写的,内容多详细==
+>
+>   #### ==实际用的就是==
+>
+>   ```js
+>   //创建store对象
+>   redux中: createStore(reducer)  
+>   //connect一参和二参是函数 函数分别接收state和dispath为形参
+>   react-redux: <Provider>, connect()() 
+>   ```
+>
+>   ```javascript
+>   //初始化
+>   function reducers(state, action) {
+>   }
+>   
+>   //创建store  createStore()方法来源于redux
+>   //createStore方法的参数为所有的reducers函数
+>   const store = createStore(reducers);
+>   //将Provider作为整个应用的根组件
+>   //Provider组件来源于react-redux
+>   <Provider store={store}>
+>     <App />
+>   </Provider>
+>   
+>   //2. 使用
+>   //组件需要用到存储到store中的数据
+>   //2.1 导入connect函数
+>   import {connect} from 'react-redux'
+>   function Component1(){
+>   }
+>   //连接组件和store
+>   //连接的目的就是注入一个dispatch函数或者监听store中的数据的改变
+>   export default connect(mapStateToProps, mapDispatchToProps, mergeProps, options)(Component1);
+>   
+>   //2.2 修改数据(触发action)
+>   //当我们通过dispatch函数触发action的时候,redux会自动调用创建store的时候注解的reducers函数
+>   //2.2.1 在组件中通过dispatch函数触发action,并传递数据
+>   dispatch({
+>     //用于区分不同的操作
+>     type: 'test-action',
+>     //将所有要传递的数据放到一个属性中
+>     payload: {
+>       name: 'zhangsan',
+>       age: 20
+>     }
+>   })
+>   //2.2.2在reducer函数中,需要有对应的处理逻辑来修改数据
+>   const {type, payload} = action;
+>   if (type === 'test-action') {
+>     //如果触发的是test-action
+>     //处理test-action操作所需要修改的数据
+>     //返回的是整个state
+>     return {
+>       ...state,//将原来的数据展开
+>       student: {
+>         ...payload
+>       }
+>     }
+>   }
+>   
+>   //在组件中获取state中的数据
+>   ```
+>
+>   
+
 # 一. 介绍
 
 **Redux是什么:**
@@ -20,9 +92,9 @@
 
 # 二. 安装
 
-`React`脚手架没安装`Redux`, 所以需要手动安装, 运行命令
+`React`脚手架没安装`Redux`, 所以安装脚手架后需要手动安装`Redux`, 运行命令
 
-```js
+```javascript
 npm install --save redux
 //或者
 yarn add redux
@@ -132,6 +204,8 @@ redux文件夹(里面有这四个文件 名字都固定的):
 + **3.建文件`reducers.js`**
 
   reducer函数是自己写  所以写此文件然后导出对应函数 文件名带s是因为里面可以写很多个reducer函数,需要进行什么操作就导出对应操作的函数,因有多个reducer函数 所以不用`export default` 这里其中一个函数是acount计算 实现数字加减操作
+
+  ==注意 : 设置了默认值不代表state就有值，所以初始时就需将state return出去，否则初始化调用函数拿不到值 默认返回undefined==
 
   ```javascript
   import {INCREMENT,DECREMENT} from './action-types'
@@ -260,8 +334,6 @@ redux文件夹(里面有这四个文件 名字都固定的):
 
 # 七. react-redux插件
 
-
-
 #### 7.1 了解
 
 是react插件库
@@ -293,6 +365,8 @@ yarn add react-redux
 #### 7.4 使用
 
 + 建立文件夹`containers`,新建文件任意名这里是Counter.js,此文件夹下的文件是容器组件 不负责UI呈现 专门处理数据业务逻辑 使用Redux
+
+> 如果`connect()(App)`中如左什么都不传,默认组件内部可通过`props`接收dispatch为参数,若传了则不能接收,仅了解,因`dispatch`一般不会在组件内用都是在`connect`中用
 
 ```jsx
 import React from 'react'
@@ -374,7 +448,7 @@ ReactDOM.render(<Provider store={ store }><Counter /></Provider>, document.getEl
 
 ```
 
-到此结束
+**到此结束,react-redux插件用到的就是如下东西 : **
 
 + **Provider**
   让所有组件都可以得到state数据
@@ -391,7 +465,7 @@ ReactDOM.render(<Provider store={ store }><Counter /></Provider>, document.getEl
 
   简洁语法可以直接指定为actions对象或包含多个action方法的对象
 
-# 八. redux异步编程
+# 八. redux异步编程(不用看了,umi封装好了)
 
 > 我们经常通过ajax请求数据, 是在react内发异步请求进行异步操作,但是正常来说异步请求应该在redux中做.但是redux不支持异步操作 如果我们想进行此操作就要用到插件
 
@@ -432,7 +506,7 @@ export const addAsync = title => {
 }
 ```
 
-# 九. 暴露多个reducer
+# 九. 暴露多个reducer(不用看了,umi封装好了)
 
 ```javascript
 import { createStore } from "redux";
@@ -476,28 +550,59 @@ export default connect(
 
 # 十. 使用redux调试工具
 
-8.1 安装扩展到
+#### **10.1 谷歌安装扩展**
 
 ![image-20200108103417586](C:\Users\35614\AppData\Roaming\Typora\typora-user-images\image-20200108103417586.png)
 
-8.2 安装工具依赖包
+> 若直接使用显示如下
 
-安装工具扩展 再项目运行命令 
+![image-20200226235109585](C:\Users\35614\AppData\Roaming\Typora\typora-user-images\image-20200226235109585.png)
 
+#### **10.2 还需操作 中间件**
+
+> 中间件有很多种,这里只写两种,每种效果不同
+
+**方法一:** ==(推荐)==
+
+> 以图表方式显示
+
+​	使用方法: 在reducer后面加上这句话即可
+
+```js
+export default createStore(
+  reducers,
+  //加上下面这句话就可以使用此工具了
+  window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
+)
 ```
-npm i redux-devtools-extension -S
+
+效果:diff可以看到差异和不同,比如修改了哪些,进行对比
+
+![image-20200227000253173](C:\Users\35614\AppData\Roaming\Typora\typora-user-images\image-20200227000253173.png)
+
+
+
+**方法二:**
+
+> 会将进行的操作打印到控制台中,没有图表 ,效果没有方法一好
+
+[redux-logger中间件官网]: https://github.com/LogRocket/redux-logger
+
+```js
+//1.在项目中安装
+yarn add redux-logger
+
+//2.使用  引入redux自带的applyMiddleware 和 刚安装的redux-logger 再应用中间件
+import { applyMiddleware, createStore } from 'redux';
+import logger from 'redux-logger'
+
+const store = createStore(
+  reducer,
+  applyMiddleware(logger)
+)
 ```
 
-8.3 编码
+​	效果展示:
 
-安装后引入 再包裹`applyMiddleware(chunk)`就可以成功调试了
-
-```javascript
-import { createStore,applyMiddleware } from "redux";
-import chunk from 'redux-chunk'
-import {composeWithDevTools} from 'redux-devtools-extensi
-export default createStore( handleTodo,composeWithDevTools( applyMiddleware(chunk) ) )
-```
-
-
+![image-20200227001547106](C:\Users\35614\AppData\Roaming\Typora\typora-user-images\image-20200227001547106.png)
 

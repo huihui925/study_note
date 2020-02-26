@@ -1,4 +1,10 @@
+# 0.环境(补充老师写的)
 
+ 1. webpack
+
+ 2. es6
+
+    [webpack配置]: http://caibaojian.com/react/webpack.html
 
 # 1. 起步-create-react-app使用
 
@@ -601,32 +607,37 @@ React的`state`相当于就是vue中的`data`,`props`相当于vue中的`props`
 #### 引入css文件
 
 + 一般不推荐写行内样式,所以通常是直接写样式文件,引入css文件.
-
 + 回顾vue组件中写样式`<style></style>`是在标签中写,这样写是全局生效,其他组件元素样式也会受影响,所以会写成`<style scoped></style>`这里的`scoped`会给HTML的DOM节点增加一个不重复的data属性,从而达到只对当前样式生效的效果.
-
 + 在React中若直接==引入css文件也是全局生效的.因====css没作用域==,打包后对整个项目都有效,js jsx这些都是有作用域的打包后不影响
-
 + 若不引入样式,打包不会打包css,所以只有引入.
 
-+ **解决方案 ==( 重要 )==**
++ **使样式文件模块化仅在导入的组件内生效 , 解决方案 ==( 重要 )==**
 
-  1. 在webpack中配置,`css-loader`后`?`接固定参数'modules'表为普通css样式表启动模块化(模块有作用域) 脚手架已配置好不需手动配置(这里将css样式表模块化 但是对安装到node_moduls的第三方包不模块化 所以正常使用可不担心 脚手架的配置不会对第三方包模块化 若自己配会对第三方模块化)
+  1. ==这步不用看,仅了解,脚手架已配置好,直接第2点命名开始==
+
+     ```js
+   //第一步:弹出webpack配置(因脚手架的配置文件都是隐藏的)
+     yarn|npm eject
+   
+     //第二步配置css-loader
+   在webpack中配置,`css-loader`后`?`接固定参数'modules'表为普通css样式表启动模块化(模块有作用域) 脚手架已配置好不需手动配置,直接第二步开始(脚手架已经将css样式表模块化 但是对安装到node_moduls的第三方包不模块化 所以正常使用可不担心 脚手架的配置不会对第三方包模块化 若自己配会对第三方模块化)
+     ```
 
   ![image-20191230202804401](C:\Users\35614\AppData\Roaming\Typora\typora-user-images\image-20191230202804401.png)
 
-  2. css文件命名有要求,必须 `名字.module.css` 例`index.module.css`
-
+  2. 想要模块化的css文件命名有要求,必须 `名字.module.css` 例`index.module.css`
+  
   3. 模块化只对css样式表里的类选择器和id选择器生效,标签选择器无效(标签选择器依然针对全局)
-
+  
      不能直接引入,需用变量接收模块化后的样式对象,打印变量知变量是obj,类名和id名用的一串随机码替代,使用时需要obj点原来的名
-
+  
      注意:虽然都是obj.名 但是id依旧要写id里 class写class里 否则无效
-
+  
      ```css
      //css样式表
      #ziti{
        font-size: 40px;
-     }
+   }
      .biaoti{
        color:red
      }
@@ -634,36 +645,38 @@ React的`state`相当于就是vue中的`data`,`props`相当于vue中的`props`
        color: blue;
      }
      ```
-
+  
      ```jsx	
      //组件内引入样式
-     import obj from'./index.module.css';
+   import obj from'./index.module.css';
      //打印
-     console.log(obj)
+   console.log(obj)
      //打印结果
-     {ziti: "MyComponent_ziti__2QzQ-", biaoti: "MyComponent_biaoti__1pCPg"}
+   {ziti: "MyComponent_ziti__2QzQ-", biaoti: "MyComponent_biaoti__1pCPg"}
      //使用
      <h3 id={obj.ziti} className={obj.biaoti}>我是大标题</h3>//class和id名字要对应 
      ```
-
+  
   4. 给类名写格式 脚手架已配置可不管,
-
-     模块化的 css文件 有类名的会模块化 若个别类名或id不想模块化见图第4点
-
+  
+   模块化的 css文件 有类名的会模块化 若个别类名或id不想模块化见图第4点
+  
      ```css
      //css样式表
-     :global(#ziti){
+   :global(#ziti){
        font-size: 40px;
-     }
+   }
      ```
-
+  
      ```jsx
       <h3 id='ziti'>我是大标题</h3>//全局的 直接使用 不需obj.名
      ```
-
+  
      
-
+  
      ![image-20191230214005804](C:\Users\35614\AppData\Roaming\Typora\typora-user-images\image-20191230214005804.png)
+
+==注意 : react中的class属性必须写为className,只写为class无效==
 
 #### 写多个class类名
 
@@ -1079,9 +1092,11 @@ componentDidMount(){
 
 
 
-# 13. 路由
+# 13. 路由react-router-dom
 
 ### 13.1 基本使用
+
+[router官网链接](https://reacttraining.com/react-router/web/guides/quick-start)
 
 在安装包时如果出错先检查记录依赖文件有没有记录下来,然后删除node_modules 再重新运行命令`npm i `或者`yarn`
 
@@ -1094,7 +1109,9 @@ componentDidMount(){
    + 引入包  需要导出这三个东西 (还可导出Switch 见13.2路由匹配参数)
 
      ```jsx
-     import { BrowserRouter as Router, Route, Link ，Switch} from 'react-router-dom'
+      /*BrowserRouter的url和普通的url一至 推荐使用
+       HashRouter 以锚点的方式 */
+import { BrowserRouter as Router, Route, Link ，Switch} from 'react-router-dom'
      ```
 
      - `BrowserRouter`是路由的根容器 一个网站只需要一个路由根容器(这里是一个网站 而不是网页) 根容器内只能有唯一一个根元素 用根容器包裹元素就相当于启动路由了
@@ -1106,14 +1123,14 @@ componentDidMount(){
        路由匹配是模糊匹配,只要有一部分匹配就可以展示对应路由组件
 
        哪怕为 路由启用了` exact `精确匹配模式，也会从上到下，把所有的 路由规则匹配一遍
-
+     
      - `Link`相当于vue中的`router-link`
      
      - Switch 见13.2路由匹配参数
      
      注意: 这里匹配路由不会覆盖页面内容,和vue中不同,至于覆盖的方式待后续了解.
      
-     ```jsx
+     ```js
      import React, { Component } from 'react'
      import { BrowserRouter as Router, Route, Link，Switch } from 'react-router-dom'
      import Home from '../Home'
@@ -1130,12 +1147,14 @@ componentDidMount(){
                          <Link to='/List'>List</Link>&nbsp;&nbsp;&nbsp;&nbsp;
                          <hr/>
                          <Switch>
-                         	<Route path='/Home' component={Home}>
-                         	</Route>
-                         	<Route path='/About' component={About}>
-                         	</Route>
-                         	<Route path='/List' component={List}>
-                        	 	</Route>
+     //标签可以是单标签 也可以是双标签 只要标签中间没内容 就可自闭合 不影响
+     //建议每个匹配规则都加上exact精确匹配 后续会介绍
+     //建议将路径长的放前面,短的例'/'放后面
+                         	<Route path='/Home' exact component={Home} />
+                         	<Route path='/About' exact component={About} />
+                         	<Route path='/List' exact component={List} />
+     						<Route path='/' exact component={List}>
+                             </Route>
                          </Switch>
                      </div>
                  </Router>
@@ -1144,11 +1163,46 @@ componentDidMount(){
      }
      ```
 
+### 13.1.1 重定向
+
+> 表示匹配到`"/student-list"`时候会重定向即自动跳转到`"/student"`
+
+```js
+<Route exact path="/student-list">
+    <Redirect to="/student" />
+</Route>
+```
+
+### 13.1.2 网页404页面
+
+> 1. 自己写个404页面 这里此页面组件叫`<NoMatch />`
+>
+> 2. 当用户乱输入url地址,而这path我们没有时,选择全都跳转到404页面
+> 3. 写Route匹配规则
+
+```js
+<Route path="*">
+    <NoMatch />
+</Route>
+```
+
+==注意 :== 
+
+==1. path中的*号表示匹配所有页面,所以请放到Route规则的最后一个,若放前面则会匹配到此404页面==
+
+==2. Route的写法有很多种,前面说的都是component属性展示组件,而这里表示展示`<NoMatch />`404页面,正常情况哪种方式效果都一样,而我们用component居多,但是这里只能用这种方式,否则不会显示对应页面==
+
+==总结 :==
+
+平时都用`component`展示组件,特殊情况用以上方式即写在标签内.
+
 ### 13.2 路由匹配参数
 
 #### exact精确匹配
 
-+ React中的路由匹配是模糊匹配,只要有一部分匹配就可以展示对应路由组件,但是一般我们都需要精确匹配 所以可以在设置Route匹配规则时 添加第三个参数 exact 译精确,表示精确匹配
++ React中的路由匹配是模糊匹配,只要有一部分匹配就可以展示对应路由组件,但是一般我们都需要精确匹配 所以可以在设置Route匹配规则时 给Route标签上添加第三个参数 exact 译精确,表示精确匹配
+
+  ==注意: 写route时,最好将长的path的route放前面,短的放后面==
 
 ```jsx
 //像这种只匹配一部分的也可以匹配上 但是这不是我们想要的
@@ -1161,7 +1215,7 @@ componentDidMount(){
 </Route>
 ```
 
-#### witch 只匹配一个路由
+#### switch 只匹配一个路由
 
 + **注意：**哪怕为 路由启用了 exact 精确匹配模式，也会从上到下，把所有的 路由规则匹配一遍
 
@@ -1190,7 +1244,6 @@ componentDidMount(){
   </Switch>
   ```
   
-  
 
 ### 13.3 获取路由参数 url地址
 
@@ -1211,11 +1264,12 @@ componentDidMount(){
 ==**new URLSearchParams(search)**==    ==<font color=red>**很重要**</font>== ( 浏览器自带的API )
 
 ```jsx
-import {useLocation} from "react-router-dom";
-
-let query = new URLSearchParams(useLocation().search);//把location的search字符串传进去
+const search = this.props.location.search;
+let query = new URLSearchParams(search);//把location的search字符串传进去
 
 query.get("name")//根据键获取值
+query.get('参数名');//取一个值, 返回值
+query.getAll('参数名');//取多个值, 返回一个数组,数组里是每个值
 ```
 
 #### URLSearchParams接口
@@ -1291,8 +1345,6 @@ searchParams.toString(); // "q=URLUtils.searchParams"
 + 通过`window.location.href="path"`可以跳转页面 这是浏览器的操作BOM方法 不推荐
 
 + 在React中推荐通过路由实现编程式导航  `this.props.history.push('path')` 参数是要跳转的路径  ,例`this.props.history.push('/login/1')` 在大组件内是获取不到的 展示哪个组件 就在哪个组件内通过`this.prop`获取`history`
-
-  
 
 + 前面提到的生命周期函数`componentWillReceiveProps`是props改变后就会触发此函数,当组件未变 路由改变时 路由改变 就会触发函数 因可通过`this.props.match.params`获取路由参数 所以比较有用
 
@@ -1386,6 +1438,8 @@ state：传递对象state且url不会显示到url链接上 适合传递多个数
 
 ##### 2. Link激活时的类名
 
+> Link有两种,一种Link,另一种NavLink,而NavLink可以设置激活类名和样式
+
 元素处于活动状态时提供的类。默认给定的类是`active`
 
 可通过[activeClassName：字符串]设置激活时类名
@@ -1416,7 +1470,7 @@ state：传递对象state且url不会显示到url链接上 适合传递多个数
 
 ##### 1.点Link后展示组件的三方法
 
-**component 方式**  一般用这种方式        ( user是组件名)
+**component 方式**  ==一般用这种方式==        ( user是组件名)
 
 ```jsx
  <Route path="/user/:username" component={User} />
@@ -1475,7 +1529,7 @@ state：传递对象state且url不会显示到url链接上 适合传递多个数
 
 可通过`this.props.location`访问
 
-==作用: 用于获取url位置( 仅params参数除外 需单独用下方match获取)==
+==作用: 用于获取url位置( 仅params参数除外 params参数需单独用下方match获取)==
 
 location在`history`也可得到 但是不推荐,因为历史对象是可变的。因此，建议`this.props.location`在组件内访问,而不是从`history.location`
 
@@ -1503,10 +1557,6 @@ location在`history`也可得到 但是不推荐,因为历史对象是可变的�
 - `isExact`-（布尔值）`true`如果整个URL都匹配（没有结尾字符）
 - `path`-（字符串）用于匹配的路径模式。用于构建嵌套的``s
 - `url`-（字符串）URL的匹配部分。用于构建嵌套的``s
-
-
-
-
 
 
 
