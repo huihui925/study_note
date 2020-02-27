@@ -405,8 +405,8 @@ directives: {
 # vue-resource( 了解 )
 
 > 之前用ajax发请求,但这是jquery内的,jquery主要是操作dom,vue不推荐 所以vue发请求用vue-resource或者axios,推荐用axios,这里对vue-resource做了解
-
-
+>
+> 有get post jsonp 数据都必须点body
 
 ```javascript
 //vue-resource基于vue,需先引入vue再引入vue-resource,引入后会在vue实例上多一个$http属性 用此发请求
@@ -432,6 +432,24 @@ this.$http.jsonp(url地址).then(res=>{
 ```
 
 # axios待写
+
+> axios也是发ajax请求的 里面只有ajax功能
+>  有get post 没有jsonp
+>  jsonp用得少 后续有其他代替
+>  数据必须点data获取
+>
+> axios不是vue官方提供的 所以不能通过Vue.use(‘axios’)安装 如果想挂在Vue上 让任何组件都能直接调用 就把它挂在prototype上
+
+```js
+//安装
+npm install axios --save
+
+//引入axios
+import axios from 'axios'
+Vue.prototype.axios = axios;
+```
+
+
 
 # 动画
 
@@ -553,6 +571,17 @@ done: 是函数afterEnter的引用,表立即执行函数,若不调用,而让此�
 
 ==el.offsetWidth此话没特殊含义 但是会强制浏览器刷新动画== 如果不写 浏览器默认不刷新动画就==没有过渡效果(==在函数前面写el.offsetWidth  el.offsetHeight  el.offsetTop  el.offsetLeft 只要和offset相关的任意一个就行)
 
+## true和false在动画中作用
+
+```
+vue把完整的一场动画 用钩子函数分为:  上半场动画 + 下半场动画
+动画的切换:          根据标识符true或false来决定是否切换  
+上半场动画:          入场  false到true (从无到有)
+下半场动画:          出场  true到false(从有到无)
+```
+
+![image-20200227234855366](C:\Users\35614\AppData\Roaming\Typora\typora-user-images\image-20200227234855366.png)
+
 ## transition-group
 
 > 前面提到的transition标签只能实现单个元素动画,如果想实现多个元素动画,或者为v-for循环出来的元素设置动画 需使用transition-group标签,注意v-for的元素必须加:key属性
@@ -580,6 +609,8 @@ done: 是函数afterEnter的引用,表立即执行函数,若不调用,而让此�
 实现元素移动时的动画,例一个元素被删除,其他元素会慢慢飘上来的效果
 
 ```javascript
+//v-move 给列表后续元素设置移动效果 必须配合absolute使用
+//不是非要v-show:true 只要是从无到有 或从有到无 例添加元素 都可直接设置动画
 .v-move{
      transition: all 0.8s ease;
 }
@@ -620,6 +651,11 @@ done: 是函数afterEnter的引用,表立即执行函数,若不调用,而让此�
    ```
 
 3. ```javascript
+   /*
+   1.将template模板抽离出来 放在template元素中,用的时候写对应选择器.
+   2.template元素要写在被实例对象控制的区域的外部.不写内部.
+   3.template里面的东西都属于模板内容(不含template元素),注意这是模板所以也只有有一个根元素
+   */
    <div id="app">
      <myh1></myh1>
    </div>
@@ -660,7 +696,7 @@ done: 是函数afterEnter的引用,表立即执行函数,若不调用,而让此�
 
 ## 定义私有组件
 
-> 在实例中定义 通过components定义,键为组件名,值为对象,内可写展示的模板内容或data或mehods
+> 在实例中定义 通过components定义,键为组件名,值为对象,内可写展示的模板内容或data或methods
 
 ```javascript
 	new Vue({
@@ -679,9 +715,11 @@ done: 是函数afterEnter的引用,表立即执行函数,若不调用,而让此�
 
 ## 组件的data和methods
 
+> 模板对象并不是只能写template才叫模板  里面还可以写data methods 这个大的对象统称为模板对象
+
 ### 定义data
 
-和实例中不同的是组件的data是一个函数,return一个对象 在模板中可直接使用
+和实例中不同的是组件的data是一个函数,return一个对象 对象里是对应数据,自己身上的数据data是可读可写的.父组件上的数据是只读的. 在模板中可直接使用
 
 ```javascript
     Vue.component('login', {
@@ -718,7 +756,7 @@ Vue.component('login', {
     })
 ```
 
-## 组件的切换
+## component组件的切换
 
 ​		component标签相当于占位符 :is内写组件名字就展示对应组件 注意:is的:是固定写法,所以写组件名字一定要加引号 否则会当作变量 从而报错
 
@@ -770,13 +808,15 @@ Vue.component('login', {
 
 ## 设置mode模式
 
-==注意点== : 直接这样会导致切换时两组件同时出现,一个退出一个进入这样不好,所以可通过`mode`设置模式,
+==注意点== : 直接这样会导致切换时两组件同时出现即进来和出现同时进行,所以可通过`mode`设置模式,
 
-`"out-in"`表示先出后进,`in-out`表示先进后出,
+`"out-in"`表示先出后进,`in-out`表示先进后出,案例见上.
 
 通常用前者这样就不会同时出现
 
-## 父组件给子组件传值
+==注意: 若组件切换动画时出现往上飘的情况,给入场或离场任意方添加`position:absolute`==
+
+## props父组件给子组件传值
 
 > 通过属性绑定形式传值,子组件内通过props接收,值为数组[ ],内写绑定的属性名即可正常使用
 
@@ -793,13 +833,34 @@ Vue.component('login', {
     })
 ```
 
+**从前笔记补充**：
+
+```
+1.	子组件可以直接使用自己身上data的数据 但是子组件默认不可直接使用父组件中的数据和方法
+2.	子组件想使用父组件中数据需进行以下操作:
+		a).在组件标签上 通过属性绑定: 把数据传给子组件内部 属性名自定
+		b).传递之后,子组件上有props属性和子组件中的data同级,是一数组,在数组中定义此属性名(属性名是字符串需引号)
+		c).可以直接使用的
+注意:
+		a).在实例中 属性名带s的都是{ },只有props例外,是一个[ ],props是property财产的缩写
+		b).子组件自己身上的data数据可直接调用 可读可写
+		c).父组件的数据子组件不可直接调用 只读不可写
+		e).data和props中不能同名  数据再模板对象中可以直接用 在方法中要this点
+```
+
+### props的另一形式
+
+> 上面的prop是数组 也可用下面这个对象 功能更全
+
+![image-20200228000500038](C:\Users\35614\AppData\Roaming\Typora\typora-user-images\image-20200228000500038.png)
+
 ## 父组件给子组件传方法
 
 > 传值用属性绑定,传方法用事件@绑定, 通过调用自己的方法,进一步方法内再通过this.$emit('绑定的方法名')来调用传递的方法
 >
-> `emit() `参数一为绑定的方法名,参数一之后都是传递的值,例`this.$emit("parent",123,456)`可传n个参
+> `$emit() `参数一为绑定的方法名,参数一之后都是传递的值,例`this.$emit("parent",123,456)`可传n个参
 
-==注意 : 传方法时不能加()括号,加了就是立即调用,会把传递后的结果传递过去,而平时写事件时可加可不加==
+==注意 : 传方法时不能加()括号,加了就是立即调用,会把传递后的结果undefined传递过去,而平时写事件时可加可不加==
 
 ```javascript
 <div id="app">
@@ -819,9 +880,27 @@ const son = {
 
 
 
-# ref获取dom元素和组件
+## ref获取dom元素和组件引用
 
-> 通过ref传递, 用`this.$refs.绑定的名字`接收传递的dom元素,若为组件,则可通过此方法拿到组件引用,直接使用组件的数据或方法,
+> ref 是 英文单词 【reference】  值类型 和 引用类型控制台报错 referenceError
+>
+> 若为组件,则可通过此方法拿到组件引用,直接使用组件的数据或方法,相当于拿的就是组件 没区别。如果把拿到的重新赋值 那组件内的数据也会改 因为这是引用。
+>
+> 只能获取自己组件内部的, 
+
+> vue不提倡操作dom 所以提供此方法获取 其实此方法也是操作dom
+>
+> 在子组件标签上传 只能父组件里拿 祖父是不能拿的 需要一层一层传 好处是不同于组件传参中还需要调用方法传递
+
+```
+操作:
+1.	在dom元素标签或组件标签上设置 属性ref=”自定义名” 
+2.	在vue实例内部 this.$refs.自定义名        这样就获取dom或组件了
+
+注意:	
+设置属性时ref 不带s 因是单个元素,取元素时 
+带s 是$refs 因里面是个对象存放多个元素或组件 键为自定义名 值为对应dom元素引用
+```
 
 ```javascript
   <div id="app">
@@ -838,7 +917,53 @@ const son = {
       },
 ```
 
+# slot **译插槽**
+
+> 如果不写slot插槽,使用组件时 组件标签内放任何东西都不会显示,只会显示组件内容,相当于完全覆盖.
+>
+> 若想显示组件又显示自己在组件标签放的内容需要用到插槽slot
+>
+> slot 分为: 匿名插槽 和 实名插槽
+
+若想显示组件又显示自己在组件标签放的内容需要用到插槽slot
+
+slot 分为: 匿名插槽 和 实名插槽
+
+1. 匿名插槽
+
+     若不添加标签内容,默认显示插槽中内容 `<slot></slot>`是占位符 不会转化为任何标签
+
+     若添加了 所有内容都会显示在添加的里面 slot顺序不要求
+
+![image-20200228001501239](C:\Users\35614\AppData\Roaming\Typora\typora-user-images\image-20200228001501239.png)
+
+   2.实名插槽
+
+​		若不添加标签内容,或未写名/名字错 默认显示插槽中内容` <slot></slot>`是占位符 不会转化为任何标签
+
+​		若添加了 对应名字的显示 若一个实名插槽 有多个标签写此名 则依次全显示
+
+​		在slot中添加属性name=’自定义名’
+
+​		使用时在使用的标签上 添加属性 slot = ‘name自定义名’ 只有一一对应才可以显示
+
+![image-20200228001549096](C:\Users\35614\AppData\Roaming\Typora\typora-user-images\image-20200228001549096.png)
+
 # 路由
+
+## 什么是路由(仅了解)
+
+```
+
+1.后端路由:	对于网站来说,网站前端里面所能看到的任何资源,都要通过url地址从后端服务器拿,后端服务器每次都能监听到请求的url地址,根据对应的url地址返回对应的资源,这个处理过程是通过路由进行分发,后端路由就是把一个url地址对应到服务器对应的资源,这个对应关系叫路由.
+
+2.前端路由:	前端路由是只在前端页面进行跳转,不会发请求给后端获取页面,只涉及前端页面的跳转.前端路由是通过hash来实现不同页面跳转,url中#号后面的都是hash.hash的特点是http请求中不会包含hash相关的内容,所以单页面程序的跳转就是通过hash来实现的.类似锚点就是hash
+
+	在单页面应用程序中,通过hash来切换页面的方式,称为前端路由
+
+```
+
+## 基本使用
 
 ```javascript
 //1.引入路由后会在全局window上挂一个构造函数 需在vue之后引入  
@@ -876,6 +1001,15 @@ const son = {
 </body>
 ```
 
+>**旧方法跳转: 仅了解**
+>
+>点击哪个链接 就跳转到对应组件 注意.`<a href="#/login">登录</a>`此写法可用但不推荐
+>链接只写path中设置的链接地址 且必须以#开头 表hash
+>跳转流程:
+>a):点击链接 url改变
+>b):监听到了url变化 
+>c)匹配路由规则path 若有匹配的 则展示对应组件components
+
 ## tag渲染指定标签
 
 `router-link`默认渲染为`a`标签,可通过`tag`将其渲染为指定标签
@@ -895,6 +1029,8 @@ const son = {
 ## linkActiveClass路由激活类
 
 路由默认激活类名为`router-link-active`,可用构造函数中属性`linkActiveClass`更改激活类名,可为激活路由设置样式.
+
+有时候我们用的插件加类会显示样式 将linkActiveClass设置为此样式类 方便
 
 ```javascript
 const router = new VueRouter({
@@ -921,7 +1057,7 @@ const router = new VueRouter({
 
 ### 方式一 : query
 
-> 路由匹配规则不变,直接在`router-link`的`to`中拼接参数,可在钩子函数`created`内通过`this.$route.query`获取
+> 可直接使用?键=值进行传参 不需要修改path, 路由匹配规则不变,直接在`router-link`的`to`中拼接参数,可在钩子函数`created`内通过`this.$route.query`获取
 
 ```javascript
 <router-link to='/login?name=zs&age=18'>登录</router-link>
@@ -940,9 +1076,17 @@ const login = {
 
 ![image-20200219143628097](C:\Users\35614\AppData\Roaming\Typora\typora-user-images\image-20200219143628097.png)
 
+> 补充 : 
+>
+> 在{{}}插值表达式中 我们使用data数据是直接使用msg 不会this.msg
+>
+> 其实this.msg和msg等效 只是在插值表达式中this可省略 在插值表达式中也可直接$route.query.键 
+
 ### 方式二 : params
 
 通过`this.$route.params获取`
+
+**注意:**   path中设置的name和age 若传参只传name的值 不传age 就不符合匹配规则 无法匹配 必须该有的都有 
 
 ```javascript
 <router-link to='/login/zs/18'>登录</router-link>
@@ -971,6 +1115,8 @@ const login = {
 
 注意 : ==`children`内的path不要加`/`只写`login`==,加了就是默认以根路径开始,不加就会默认接在父路由路径后面,相当于`/account/login`,所以子路由写规则时只写半截,不加`/`,==`link`中就要写全即`to='/account/login'`==
 
+综上 子路由 to中写层级 path中写子 不写斜杠 此为最佳
+
 ```javascript
 routes: [
         {
@@ -983,6 +1129,12 @@ routes: [
         },
       ]
 ```
+
+> 补充
+>
+> 只要不是通过children的组件 都是显示到app的坑里,只有通过children的组件 才显示到组件内的坑里.
+>
+> 实例控制区域为app,有显示组件的坑,当路由变化就通过坑显示对应组件,并且将除自身以外的组件都覆盖掉. 想不覆盖就只有通过路由嵌套children方式写.否则都是直接覆盖(即用的区域app控制的坑)
 
 ## 路由的命名空间
 
@@ -1023,11 +1175,13 @@ routes: [
 
 # watch监听
 
-> 绑定的属性为data中的数据,若数据更改则触发对应函数,不会初始化,不更改就不会执行,
+> 绑定的属性为data中的数据或路由.不写this,写了this会出错,若数据更改则触发对应函数,不会初始化,不更改就不会执行,
 >
 > 主要是监听路由的改变
 
 1. 监听`data`数据改变,属性省略`this`
+
+     函数有两参,一参 newVal 是最新的数据 , 二参oldVal 是旧的数据即更新前一次的数据
 
 ```javascript
 <input type="text" v-model='msg'>
@@ -1036,13 +1190,13 @@ routes: [
         msg:123
       },
       watch: {
-        msg(){
+        msg(newVal,oldVal){
           console.log('msg改变了')
         }
       }
 ```
 
-2. ==监听路由变化==
+2. ==监听路由变化( 推荐 )==
 
 `watch`主要是监听路由变化的,同样不要绑定属性不写`this`. 可以直接写`$route`,而`$route.path`是对象下的一个属性,没区别
 
@@ -1054,13 +1208,22 @@ watch: {
       }
 ```
 
+### 另一种方式获取到路由
+
+路由不是dom元素,没有事件,所以只有通过watch来监听路由的变化,确实如此.
+
+还有一种就是,刚进新页面就可以直接访问到路由,例图
+
+![image-20200228005219331](C:\Users\35614\AppData\Roaming\Typora\typora-user-images\image-20200228005219331.png)
+
 # computed计算属性
 
 > 1. ==计算属性是自定义属性名然后直接使用,不需在data中定义==,值为`function`,函数内需`return`,使用时直接当属性使用,不能当函数调用
->
 > 2. 函数内相关联的data数据若发生改变则会触发函数进行计算
 > 3. 计算属性有缓存,若未改变,则直接使用上次的计算结果不会重新计算,利于性能
 > 4. 计算属性有初始化,即第一次进入网页会默认计算一次
+> 5. 不在data上写只在computed上写
+> 6. 计算属性的本质是方法,即属性名为属性名  值为function函数  但是我们使用的时候是把名称直接当属性用 不是当方法用所以不能加()调用 加了反而报错
 
 ```javascript
 	<input type="text" v-model='one'>+
@@ -1078,3 +1241,38 @@ watch: {
       } 
 ```
 
+# render
+
+render是vue实例上的属性
+
+```js
+render(createElements){//createElements是一个方法,调用它可以将指定的组件模板渲染为html结构
+    return createElements (login1) //return的结果,会将el选定的元素替换为login1指定的组件,里面的内容也全部替换
+}
+```
+
+# 获取元素位置类似offsetleft
+
+正常情况下获取元素位置 如果是当前元素可以通过ref=’元素自定义名’ 再let a = this.$ref. ’元素自定义名’ 获取当前元素 最后通过a.getBoundingClientRect()来获取当前元素位置 返回一个对象从而获取位置
+
+![image-20200228005717354](C:\Users\35614\AppData\Roaming\Typora\typora-user-images\image-20200228005717354.png)
+
+但是如果是父组件用了子组件 需要拿到子组件的某元素位置 就不能通过ref来获取(ref只能适用于当前组件的元素 若为子组件内的不适用) 所以此时怎么获取子组件内部某元素的位置内 通过传值比较麻烦 vue不提倡操作dom(vue提倡在数据渲染和数据双向绑定上不操作dom) 但是在一些不涉及数据绑定的情况小的细节上 如果不操作dom会比较麻烦的情况下 我们可以稍微操作下dom 小的细节不用那么严谨
+
+==注意：在组件中 只要在界面上 你就可以拿到任何一个组件内的元素 和组件没关系 在dom世界里和组件没任何关系==
+
+例在子组件内给元素定一个id 再父组件中 可以直接通过id选择器获取                               
+
+![image-20200228005838909](C:\Users\35614\AppData\Roaming\Typora\typora-user-images\image-20200228005838909.png)
+
+# url 的正则表达式：path-to-regexp
+
+该工具库用来处理 url 中地址与参数，能够很方便得到我们想要的数据。不用再手写正则规则
+
+js 中有 RegExp 方法做正则表达式校验，而 path-to-regexp 可以看成是 url 字符串的正则表达式。
+
+https://www.jianshu.com/p/7d2dbfdd1b0f
+
+# js 里面的键盘事件对应的键码
+
+http://www.cnblogs.com/wuhua1/p/6686237.html
