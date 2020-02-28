@@ -102,7 +102,7 @@ yarn add redux
 
 # 三. redux工作流程
 
-![img](http://www.ruanyifeng.com/blogimg/asset/2016/bg2016091802.jpg)
+![1](react的Redux知识点---2.assets/1-1582869749800.png)
 
 + #### 读状态
 
@@ -552,11 +552,11 @@ export default connect(
 
 #### **10.1 谷歌安装扩展**
 
-![image-20200108103417586](C:\Users\35614\AppData\Roaming\Typora\typora-user-images\image-20200108103417586.png)
+![image-20200108103417586](react的Redux知识点---2.assets/image-20200108103417586.png)
 
 > 若直接使用显示如下
 
-![image-20200226235109585](C:\Users\35614\AppData\Roaming\Typora\typora-user-images\image-20200226235109585.png)
+![image-20200226235109585](react的Redux知识点---2.assets/image-20200226235109585.png)
 
 #### **10.2 还需操作 中间件**
 
@@ -578,7 +578,7 @@ export default createStore(
 
 效果:diff可以看到差异和不同,比如修改了哪些,进行对比
 
-![image-20200227000253173](C:\Users\35614\AppData\Roaming\Typora\typora-user-images\image-20200227000253173.png)
+![image-20200227000253173](react的Redux知识点---2.assets/image-20200227000253173.png)
 
 
 
@@ -604,5 +604,5 @@ const store = createStore(
 
 ​	效果展示:
 
-![image-20200227001547106](C:\Users\35614\AppData\Roaming\Typora\typora-user-images\image-20200227001547106.png)
+![image-20200227001547106](react的Redux知识点---2.assets/image-20200227001547106.png)
 

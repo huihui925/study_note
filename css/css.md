@@ -22,7 +22,7 @@ origin译起源 表示只显示内容盒 如果设置了padding 则显示padding
 
 配合clip使用 clip会把内容盒外盒显示的区域都剪切掉
 
-![image-20200117195417145](C:\Users\35614\AppData\Roaming\Typora\typora-user-images\image-20200117195417145.png)
+![image-20200117195417145](css.assets/image-20200117195417145.png)
 
 ## 百分比宽度
 
@@ -51,3 +51,11 @@ em是当前元素的字体大小 如果当前元素未设置 就是父级元素 
 rem是根元素html的字体大小 如果html根元素没设置就是浏览器默认字体大小
 
  
+
+# 贝塞尔曲线
+
+贝塞尔曲线就是动画速度曲线,对速度的展示
+
+平常我们用的`transition:all .5s ease`这里的ease就是速度曲线,如果我们想展示其他速度,可以用工具,找到自己想要的速度,然后`transition: all 3.0s cubic-bezier(0.75, 0.25, 0.25, 0.75)`
+
+替换对应位置即可

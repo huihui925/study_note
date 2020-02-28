@@ -78,7 +78,7 @@
 
 ##### 2.2.3 关系型数据库的主流产品
 
-![image-20200227161651681](C:\Users\35614\AppData\Roaming\Typora\typora-user-images\image-20200227161651681.png)
+![image-20200227161651681](MySQL数据库.assets/image-20200227161651681.png)
 
 ​		虽然1.2好,但是市面上大部分公司用MySQL，因为它开源免费有免费版。
 
@@ -110,7 +110,7 @@
 
 ##### 2.3.3 非关系型数据库主流产品
 
-![image-20200227162926992](C:\Users\35614\AppData\Roaming\Typora\typora-user-images\image-20200227162926992.png)
+![image-20200227162926992](MySQL数据库.assets/image-20200227162926992.png)
 
 ## 结构化查询语言（SQL）
 
@@ -137,3 +137,13 @@
 ### 3 分类
 
 #### 3.1 数据查询语言（DQL）
+
+
+
+## 安装
+
+![1](MySQL数据库.assets/1.png)
+
+![2](MySQL数据库.assets/2.png)
+
+![3](MySQL数据库.assets/3.png)

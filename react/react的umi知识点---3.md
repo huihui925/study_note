@@ -168,7 +168,7 @@ subscriptions: {
 
 **6.1 如果是全局很多地方要用的 就写在这里面 src/models内**
 
-![image-20200114114918939](C:\Users\35614\AppData\Roaming\Typora\typora-user-images\image-20200114114918939.png)
+![image-20200114114918939](react的umi知识点---3.assets/image-20200114114918939.png)
 
 **6.2 如果不是全局要用的 只是某个小页面用 可以写在pages内** 
 
@@ -178,7 +178,7 @@ subscriptions: {
 
 ==注意:写在page里的特点是 仅此文件或目录的 父目录下的文件可以使用此模块==即可以connect ,其他都不行 例如这model.js在user目录下 只能user目录下的文件可以用 其他login目录就不行 这个container.js是pages根目录的也不行
 
-![image-20200114190230151](C:\Users\35614\AppData\Roaming\Typora\typora-user-images\image-20200114190230151.png)
+![image-20200114190230151](react的umi知识点---3.assets/image-20200114190230151.png)
 
 # 七: url 的正则表达式：path-to-regexp
 
@@ -192,4 +192,4 @@ https://www.jianshu.com/p/7d2dbfdd1b0f
 
 `widow.g_app._store.getState()`可获取全局的state
 
-![QQ截图20200110152857](C:\Users\35614\AppData\Roaming\Typora\typora-user-images\QQ截图20200110152857.png)
+![QQ截图20200110152857](react的umi知识点---3.assets/QQ截图20200110152857.png)

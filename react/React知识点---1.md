@@ -27,7 +27,7 @@ yarn create react-app my-app
 
 [解决方案参考网站](https://faceghost.com/article/248601)
 
-![image-20200204194424754](C:\Users\35614\AppData\Roaming\Typora\typora-user-images\image-20200204194424754.png)
+![image-20200204194424754](React知识点---1.assets/image-20200204194424754.png)
 
 ```shell
 解决办法
@@ -70,7 +70,7 @@ create-react-app.cmd antd-demo react-app
 
 # **2. 虚拟DOM**
 
-![image-20191229123223670](C:\Users\35614\AppData\Roaming\Typora\typora-user-images\image-20191229123223670.png)
+![image-20191229123223670](React知识点---1.assets/image-20191229123223670.png)
 
 # **3. 创建虚拟DOM元素**
 
@@ -163,7 +163,7 @@ const myh = React.createElement('h1',null,'我是一个大大的h1')
 
     渲染如下:
 
-    ![image-20191229153027564](C:\Users\35614\AppData\Roaming\Typora\typora-user-images\image-20191229153027564.png)
+    ![image-20191229153027564](React知识点---1.assets/image-20191229153027564.png)
 
     若数组里是多个jsx直接把数组放进去即可 会自动转换 必须给每一项加key值否则会报错
 
@@ -176,7 +176,7 @@ const myh = React.createElement('h1',null,'我是一个大大的h1')
 
         效果如下:
 
-      ![image-20191229154018045](C:\Users\35614\AppData\Roaming\Typora\typora-user-images\image-20191229154018045.png)
+      ![image-20191229154018045](React知识点---1.assets/image-20191229154018045.png)
 
     + **若想把字符串数组里的每个元素包裹一个h5标签再渲染**
 
@@ -207,7 +207,7 @@ const myh = React.createElement('h1',null,'我是一个大大的h1')
 
 12. 假如一个标签里面没有内容，你可以使用 /> 来闭合标签，就像 XML 语法一样：
 
-    ![image-20191229124225152](C:\Users\35614\AppData\Roaming\Typora\typora-user-images\image-20191229124225152.png) 
+     ![image-20191229124225152](React知识点---1.assets/image-20191229124225152.png)
 
     若div没内容 也可直接<div/>
 
@@ -270,7 +270,7 @@ jsx里只能有一个根元素 可以包含很多子元素
 
 + **函数组件:**
 
-![image-20191229124650876](C:\Users\35614\AppData\Roaming\Typora\typora-user-images\image-20191229124650876.png)
+![image-20191229124650876](React知识点---1.assets/image-20191229124650876.png)
 
 ​	    此运行流程是:
 
@@ -281,13 +281,13 @@ jsx里只能有一个根元素 可以包含很多子元素
 
 + **类组件**
 
-![image-20191229124849409](C:\Users\35614\AppData\Roaming\Typora\typora-user-images\image-20191229124849409.png)
+![image-20191229124849409](React知识点---1.assets/image-20191229124849409.png)
 
 1. <font color=red>有组件的地方必须引入React 不管使不使用都必须引入 </font> 因为组件依赖React所以必须引入
 
 2. React元素可以是dom标签 也可以是组件 例
 
-   ![image-20191229125430496](C:\Users\35614\AppData\Roaming\Typora\typora-user-images\image-20191229125430496.png)
+   ![image-20191229125430496](React知识点---1.assets/image-20191229125430496.png)
 
 3. jsx内部调用React.createElement()创建元素对象,jsx是JavaScript扩展语法 <font color=red>dom标签和组件<component />都是jsx语法 所以React元素可以是dom标签也可以是组件</font>
 
@@ -303,7 +303,7 @@ jsx里只能有一个根元素 可以包含很多子元素
 
 9. 组件可以在输出中引用其他组件
 
-![image-20191229125629032](C:\Users\35614\AppData\Roaming\Typora\typora-user-images\image-20191229125629032.png)
+![image-20191229125629032](React知识点---1.assets/image-20191229125629032.png)
 
 8. 组件的作用是可复用性,学会提取组件是必须的,最初看上去,提取组件可能是一种繁重的工作,但是在大型项目中构建可复用库完全值得,如果在UI中有一部分<font color=red>被多次使用或组件本身就比较复杂 那么它就是一个复用组件候选项</font>
 
@@ -334,11 +334,11 @@ React的`state`相当于就是vue中的`data`,`props`相当于vue中的`props`
 
  如图此组件嵌套多 代码复杂 不利于维护 符合提取组件条件 所以将其提取出后为图二图三结果 注意<font color=red>当多层嵌套提取时 先提取最里面的再一层一层从内向外提取</font>
 
-![image-20191229125809130](C:\Users\35614\AppData\Roaming\Typora\typora-user-images\image-20191229125809130.png)
+![image-20191229125809130](React知识点---1.assets/image-20191229125809130.png)
 
-![image-20191229125815016](C:\Users\35614\AppData\Roaming\Typora\typora-user-images\image-20191229125815016.png)
+![image-20191229125815016](React知识点---1.assets/image-20191229125815016.png)
 
-![image-20191229125821381](C:\Users\35614\AppData\Roaming\Typora\typora-user-images\image-20191229125821381.png)
+![image-20191229125821381](React知识点---1.assets/image-20191229125821381.png)
 
 + **纯函数:**
 
@@ -623,7 +623,7 @@ React的`state`相当于就是vue中的`data`,`props`相当于vue中的`props`
    在webpack中配置,`css-loader`后`?`接固定参数'modules'表为普通css样式表启动模块化(模块有作用域) 脚手架已配置好不需手动配置,直接第二步开始(脚手架已经将css样式表模块化 但是对安装到node_moduls的第三方包不模块化 所以正常使用可不担心 脚手架的配置不会对第三方包模块化 若自己配会对第三方模块化)
      ```
 
-  ![image-20191230202804401](C:\Users\35614\AppData\Roaming\Typora\typora-user-images\image-20191230202804401.png)
+  ![image-20191230202804401](React知识点---1.assets/image-20191230202804401.png)
 
   2. 想要模块化的css文件命名有要求,必须 `名字.module.css` 例`index.module.css`
   
@@ -674,7 +674,7 @@ React的`state`相当于就是vue中的`data`,`props`相当于vue中的`props`
   
      
   
-     ![image-20191230214005804](C:\Users\35614\AppData\Roaming\Typora\typora-user-images\image-20191230214005804.png)
+  ![image-20191230214005804](React知识点---1.assets/image-20191230214005804.png)
 
 ==注意 : react中的class属性必须写为className,只写为class无效==
 
@@ -723,7 +723,7 @@ React的`state`相当于就是vue中的`data`,`props`相当于vue中的`props`
 1. State组件的状态,props是不可改变的,State是可改变的.
 2. 不能直接修改State,State只能在构造函数constructor中赋值 其他地方赋值会报错.其他地方只能用setState()来改变
 
-<img src="C:\Users\35614\AppData\Roaming\Typora\typora-user-images\image-20191229125957914.png" alt="image-20191229125957914" style="zoom:150%;" />
+![image-20191229125957914](React知识点---1.assets/image-20191229125957914-1582870120851.png)
 
 3. State的状态改变是合并 添加或覆盖相同key的值 其他key不受影响
 
@@ -732,19 +732,19 @@ React的`state`相当于就是vue中的`data`,`props`相当于vue中的`props`
 
 5. this.setState是异步的,State的更新是异步的,如果在同一事件函数中多次调用setState()不会执行的时候就马上更新而是当事件函数执行结束后一次性渲染 所以setState()注意写的顺序 如果是相同key 后面的会覆盖前面的 且不要在setState()内部用this.State 因为此结果不会实时更新 放回调函数是因为执行结束(执行到函数最后一步)想一次性渲染也没办法 因为它是回调 你不知道什么时候执行完 就不会等待 进入回调队列中 轮到它就立即执行并渲染
 
-<img src="C:\Users\35614\AppData\Roaming\Typora\typora-user-images\image-20191229130052528.png" alt="image-20191229130052528" style="zoom:150%;" />
+![image-20191229130052528](React知识点---1.assets/image-20191229130052528.png)
 
 1. 如果想立即拿到State的值,可执行`settate({},callback)`第二个参数是回调,执行此函数时结果是最新的.
 
 2. State是局部的 组件外部无法访问 父组件子组件都无法访问 除非是当前组件引用其他组件并将state传递过去 所以State是自上而下的 且 是单向的 是直接取值然后把值传过去
 
-   ![image-20191229130146730](C:\Users\35614\AppData\Roaming\Typora\typora-user-images\image-20191229130146730.png)
+   ![image-20191229130146730](React知识点---1.assets/image-20191229130146730.png)
 
 ## 生命周期
 
 可参考简书:https://www.jianshu.com/p/b331d0e4b398
 
-![React中组件的生命周期 - 详解](C:\Users\35614\AppData\Roaming\Typora\typora-user-images\React中组件的生命周期 - 详解.png)
+![React中组件的生命周期 - 详解](React知识点---1.assets/React中组件的生命周期 - 详解.png)
 
 + #### 生命周期: 
 
@@ -852,15 +852,15 @@ React的`state`相当于就是vue中的`data`,`props`相当于vue中的`props`
 
     错误传值后报错如下: (提示传入的string 期望得到number类型)
 
-    ![image-20200101112303009](C:\Users\35614\AppData\Roaming\Typora\typora-user-images\image-20200101112303009.png)
+    ![image-20200101112303009](React知识点---1.assets/image-20200101112303009.png)
 
   > 注意:在vscod中如果包有.ts后缀文件可以按住ctrl再点击变量,可以跳转到对应文件里,在里面可以看到支持哪些类型的校验(如图第三列都是)
 
-  ![image-20200101112831577](C:\Users\35614\AppData\Roaming\Typora\typora-user-images\image-20200101112831577.png)
+![image-20200101112831577](React知识点---1.assets/image-20200101112831577.png)
 
   React生命周期的回调函数总结成表格如下：
 
-  ![React生命周期表格](C:\Users\35614\AppData\Roaming\Typora\typora-user-images\React生命周期表格.png)
+![React生命周期表格](React知识点---1.assets/React生命周期表格.png)
 
   **组件生命周期的执行顺序：**(可以在这里看参数列表)
 
@@ -1046,7 +1046,7 @@ var Child = React.createClass({
 
 打印结果
 
-![img](https://upload-images.jianshu.io/upload_images/1728983-f8a30eea45cec128.png?imageMogr2/auto-orient/strip|imageView2/2/w/555/format/webp)
+![2](React知识点---1.assets/2.png)
 
 **(3)react-redux使用时利用ref调用子组件方法不可用报错**
 
@@ -1253,7 +1253,7 @@ import { BrowserRouter as Router, Route, Link ，Switch} from 'react-router-dom'
 + 注意: 在大组件内是获取不到的 展示哪个组件 就在哪个组件内获取(好像是因为传递了属性 把props规定死了所以才拿不到 可以试试不规定死 或者把值`this.props.match.params`传递过去)
 + ==在浏览器中有`window.location`可以任何页面获取当前页面的url地址== 操作BOM 尽量少用  偶尔可以
 
-![image-20200101220854416](C:\Users\35614\AppData\Roaming\Typora\typora-user-images\image-20200101220854416.png)
+![image-20200101220854416](React知识点---1.assets/image-20200101220854416.png)
 
 + 前面提到的生命周期函数`componentWillReceiveProps`是props改变后就会触发此函数,当==组件未变 路由改变时 会触发此函数== 因可通过`this.props.match.params`获取路由参数
 
