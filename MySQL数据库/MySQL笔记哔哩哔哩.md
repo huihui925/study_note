@@ -22,10 +22,8 @@ CREATE DATABASE test;
 -- 使用数据库
 use test;
 
--- 显示已选数据库中的所有表 								  													    (需先use 数据库)
-show tables;
-
--- 创建数据表
+-- 创建数据表 三种方式 推荐第二种(注意: 创建时最后一个字段不写逗号,写了报错)
+-- 第一种
 CREATE TABLE pet (
     name VARCHAR(20),
     owner VARCHAR(20),
@@ -34,10 +32,37 @@ CREATE TABLE pet (
     birth DATE,
     death DATE
 );
+-- 第二种(如果不存在则创建)
+CREATE TABLE if not exists pet (
+);
+-- 第三种(不使用服务器默认字符编码,单独为此表设置字符编码或引擎)
+CREATE TABLE if not exists pet (
+)charset=utf8;
 
 -- 查看数据表结构详情
 -- describe pet;	(两种方式下面是简写)																	(显示字段和数据类型等)
 desc pet;
+-- 第三种形式 通过查看所有列来展示
+show columns from '表名'
+
+-- 显示已选数据库中的所有表 								  													    (需先use 数据库)
+show tables;
+-- 查看表名是t开头的表 通过模糊查询查看
+show tables like 't%';
+
+-- 查看表的创建语句 建表语句
+show create table tableName;
+
+-- 修改表本身：存储引擎，字符集名校对集
+alter table 表名 charset utf8;
+-- 或者（中间等号是可写可不写）
+alter table 表名 charset = utf8；
+
+-- 修改表名（两种方式）
+-- 方式一 rename译改名、重命名
+alter table 表名 rename to 新名字；
+-- 方式二
+rename table 旧表名 to 新表名；
 
 -- 查询数据表的记录 																					(已选中数据库,查看里面的pet表内容)
 SELECT * from pet;
@@ -55,14 +80,38 @@ DELETE FROM pet where name = 'squirrel';
 
 -- 删除表
 DROP TABLE myorder;
+-- 删除多张表 
+DROP TABLE 表1,表2,表3,表4;
 
--- 修改字段类型
-ALTER TABLE user MODIFY id INT;
+## 新增表字段 
+-- column可写可不写 字段位置可选
+-- 不指定位置默认放最后
+alter table 表名 add column 字段名 字段类型；
+-- 位置的关键字两个：
+-- first:表示要把新增字段放到第一列
+-- after+字段名:表示要新增字段放在after指定字段后面
+-- 通过after表示放在字段a后面
+alter table 表名 add column 字段名 字段类型 after 已有字段a;
+
+## 删除表字段
+alter table 表名 drop 字段名。
+
+## 对字段的修改，通过change或者modify都可实现,两者区别是参数一个指定新字段名,一个不指定新字段名,column可省略,
+
+## mysql修改字段类型：	 
+ALTER  TABLE 表名 MODIFY 字段名 新数据类型 新类型长度  新默认值  新注释 位置; 
+alter  table table1 modify column1  decimal(10,1) DEFAULT NULL COMMENT -- '注释'; 
+ 
+## mysql修改字段名：必须指定数据类型
+ALTER  TABLE 表名 CHANGE 旧字段名 新字段名 新数据类型 位置;	 
+alter  table table1 change column1 column1 varchar(100) DEFAULT 1.2 COMMENT '注释'; 
 ```
 
 ## 建表约束
 
 ### 主键约束
+
+​		==修改表字段，通过change或者modify都可实现,两者区别是参数一个指定新字段名,一个不指定新字段名,column可省略,==
 
 ```mysql
 -- 主键约束
@@ -79,7 +128,7 @@ CREATE TABLE user (
     id INT,
     name VARCHAR(20),
     password VARCHAR(20),
-    primary key(id, name)
+    primary key(id, name)  -- 也可只写一个字段,和直接写字段后等效
 );
 
 -- 自增约束
@@ -93,11 +142,10 @@ INSERT INTO b (name) VALUES ('zs');
 
 -- 添加主键约束
 -- 如果忘记设置主键，还可以通过SQL语句设置（两种方式）：
-ALTER TABLE user ADD PRIMARY KEY(id);
+ALTER TABLE user ADD PRIMARY KEY(id);-- 通过修改表给字段加主键约束
 ALTER TABLE user MODIFY id INT PRIMARY KEY; 	-- 修改字段的方式添加主键约束
-
--- 删除主键
-ALTER TABLE user drop PRIMARY KEY;
+-- 删除主键 
+ALTER TABLE user drop PRIMARY KEY;-- 因主键只有一个,所以不指定
 ```
 
 **注意**
@@ -116,7 +164,7 @@ ALTER TABLE user drop PRIMARY KEY;
 ### 唯一主键
 
 ```mysql
--- 使字段不重复 
+-- 使字段不重复 允许为空 值只能出现一次  例若多个空值就不唯一了
 -- 建表时创建唯一主键(三种方式)
 -- 方式一和方式二等效
 CREATE TABLE user ( 
@@ -138,11 +186,13 @@ CREATE TABLE user (
 
 
 -- 添加唯一主键
--- 如果建表时没有设置唯一建，还可以通过SQL语句设置（两种方式）：
+-- 如果建表时没有设置唯一建，还可以通过SQL语句设置（三种方式）：
 ALTER TABLE user ADD UNIQUE(name);
 ALTER TABLE user MODIFY name VARCHAR(20) UNIQUE;
+-- 也可给唯一约束取名 若取名后 删除时的名字就不能是列名 必须是设置的约束名
+ALTER TABLE user ADD constraint '约束名' UNIQUE(name);
 
--- 删除唯一主键
+-- 删除唯一主键 若创建时有取名,就把名字改为取的名字
 ALTER TABLE user DROP INDEX name;
 ```
 
@@ -158,10 +208,16 @@ CREATE TABLE user (
 
 -- 添加唯一主键
 -- 如果建表时没有设置非空约束，还可以通过SQL语句设置
+-- 方式一
 ALTER TABLE user MODIFY id INT NOT NULL;
+-- 方式二
+ALTER TABLE a CHANGE COLUMN name_ name_ VARCHAR(20) not null;
 
 -- 移除非空约束
+-- 方式一
 ALTER TABLE user MODIFY name VARCHAR(20);
+-- 方式二 （经测试 直接不写也可以）
+ALTER TABLE a CHANGE COLUMN name_ name_ VARCHAR(20) null;
 ```
 
 ### 默认约束
@@ -174,14 +230,26 @@ CREATE TABLE user2 (
     name VARCHAR(20),
     age INT DEFAULT 10
 );
+-- 修改表指定默认值(两种方式)
+-- 方式一 老师讲的
+alter table '表名' change column 字段名 新字段名 新数据类型 default 默认值;
+-- change column改变列(字段) 后接要改的字段 然后是设置新的字段名 数据类型 若不改就填原样 然后设置默认值
+-- 方式二 自己猜的
+ALTER TABLE 表名 MODIFY 字段名 字段类型 设置默认值;
+-- 案例:
+ALTER TABLE a MODIFY name INT DEFAULT 50;
 
 -- 移除默认约束
+-- 方式一
 ALTER TABLE user MODIFY age INT;
+-- 方式二 将值设置为null
+alter table '表名' change column 字段名 新字段名 新数据类型 default null;
 ```
 
 ### 外键约束
 
 ```mysql
+## 创建表时加外键
 -- 班级
 CREATE TABLE classes (
     id INT PRIMARY KEY,
@@ -195,12 +263,51 @@ CREATE TABLE students (
     -- 这里的 class_id 要和 classes 中的 id 字段相关联,所以类型必须一致            
     class_id INT,
     -- 表示 class_id 的值必须来自于 classes 中的 id 字段值
+  	-- 加外键方式 选其一
+  	-- 方式一 这里指定外键没设置外键名,系统会自动加
     foreign key(class_id) references classes(id)
+  	-- 方式二 指定外键名且创建外键
+  	constraint '外键名' foreign key('列名') references '主表名'('列名')
 );
 
 -- 1. 主表（父表）classes 中没有的数据值，在副表（子表）students 中，是不可以使用的；
 -- 2. 主表中的记录被副表引用时，主表不可以被删除。
+
+## 创建表后加外键
+-- 添加外键名
+alter table '表名' add constraint '外键名' foreign key('列名') references '主表名'('列名');
+
+## 删除外建名（这里填的外键约束名不是键所在的列名）
+ALTER TABLE '表名' DROP FOREIGN KEY '外键约束名';
 ```
+
+```mysql
+-- 查看外键约束名（三种方式 推荐方式三）
+-- 方式一 只看约束信息 表名替换成你要看的表
+SELECT CONSTRAINT_CATALOG,
+CONSTRAINT_SCHEMA,
+CONSTRAINT_NAME,
+TABLE_SCHEMA,
+TABLE_NAME,
+CONSTRAINT_TYPE
+FROM
+information_schema.TABLE_CONSTRAINTS
+WHERE
+TABLE_NAME='表名'
+-- 方式二 看表大部分信息 查看表的创建语句
+show create table tableName;
+
+
+-- 参考链接:https://blog.csdn.net/shenqueying/article/details/78062545
+```
+
+查看约束名 方式三
+
+> 选中子表--->右键--->关/系/外键
+
+![image-20200304160358549](MySQL笔记哔哩哔哩.assets/image-20200304160358549.png)
+
+![image-20200304160505051](MySQL笔记哔哩哔哩.assets/image-20200304160505051.png)
 
 ## 数据库的三大设计范式
 
@@ -374,52 +481,54 @@ SELECT * FROM student;
 SELECT * FROM teacher;
 ```
 
-### 1 到 10
+### 1 到 11种查询
 
 ```mysql
--- 查询 student 表的所有行
+-- 1、查询 student 表的所有记录 (*表所有字段数，即查询此表所有字段数的记录)
 SELECT * FROM student;
 
--- 查询 student 表中的 name、sex 和 class 字段的所有行
+-- 2、查询 student 表中的 name、sex 和 class 字段的记录（即查询指定字段的记录）
 SELECT name, sex, class FROM student;
 
--- 查询 teacher 表中不重复的 department 列
--- department: 去重查询
-SELECT DISTINCT department FROM teacher;
+-- 3、查询 teacher 表中department列内不重复记录 
+-- distinct: 译不同的，是排重关键字
+SELECT distinct department FROM teacher;
 
--- 查询 score 表中成绩在60-80之间的所有行（区间查询和运算符查询）
+-- 4.查询 score 表中成绩在60-80之间的所有行（区间查询和运算符查询）
 -- BETWEEN xx AND xx: 查询区间, AND 表示 "并且"
 SELECT * FROM score WHERE degree BETWEEN 60 AND 80;
 SELECT * FROM score WHERE degree > 60 AND degree < 80;
 
--- 查询 score 表中成绩为 85, 86 或 88 的行
+-- 5、查询 score 表中成绩为 85, 86 或 88 的行（或者关系的查询）
 -- IN: 查询规定中的多个值
-SELECT * FROM score WHERE degree IN (85, 86, 88);
+SELECT * FROM score WHERE degree IN(85, 86, 88);
 
--- 查询 student 表中 '95031' 班或性别为 '女' 的所有行
--- or: 表示或者关系
+-- 6、查询 student 表中 '95031' 班或性别为 '女' 的所有行
+-- or: 表示或者关系 （和案例5区别：5是同字段或者关系，6是不同字段，若换成and则是不同字段并且关系）
 SELECT * FROM student WHERE class = '95031' or sex = '女';
 
--- 以 class 降序的方式查询 student 表的所有行
+-- 7、order by 排序, 以 class 降序的方式查询 student 表的所有行
 -- DESC: 降序，从高到低
 -- ASC（默认）: 升序，从低到高
 SELECT * FROM student ORDER BY class DESC;
 SELECT * FROM student ORDER BY class ASC;
 
--- 以 c_no 升序、degree 降序查询 score 表的所有行
+-- 8、多字段排序，以 c_no 升序、degree 降序查询 score 表的所有行
+-- 是先c_no升序,升序完成后在相同的记录中,再DESC降序
 SELECT * FROM score ORDER BY c_no ASC, degree DESC;
 
--- 查询 "95031" 班的学生人数
+-- 9、查询 class字段为"95031" 的个数
 -- COUNT: 统计
 SELECT COUNT(*) FROM student WHERE class = '95031';
 
--- 查询 score 表中的最高分的学生学号和课程编号（子查询或排序查询）。
+-- 10、查询 score 表中的最高分的学生学号和课程编号（子查询或排序查询）。
 -- (SELECT MAX(degree) FROM score): 子查询，算出最高分
 SELECT s_no, c_no FROM score WHERE degree = (SELECT MAX(degree) FROM score);
 
---  排序查询
--- LIMIT r, n: 表示从第r行开始，查询n条数据
-SELECT s_no, c_no, degree FROM score ORDER BY degree DESC LIMIT 0, 1;
+-- 11、排序查询
+-- limit r, n: 表示从第r行开始，查询n条数据,首行下标为0所以0,1表示第一行开始(含自身)查一条。limit限制
+SELECT s_no, c_no, degree FROM score ORDER BY degree DESC limit 0, 1;
+-- 排序查询有缺陷,若最高分有两个或者三个,那么这里0,1则只查了一条
 ```
 
 ### 分组计算平均成绩
@@ -427,12 +536,13 @@ SELECT s_no, c_no, degree FROM score ORDER BY degree DESC LIMIT 0, 1;
 **查询每门课的平均成绩。**
 
 ```mysql
--- AVG: 平均值
+-- AVG: 平均值 (查询指定单个课的平均成绩)
 SELECT AVG(degree) FROM score WHERE c_no = '3-105';
 SELECT AVG(degree) FROM score WHERE c_no = '3-245';
 SELECT AVG(degree) FROM score WHERE c_no = '6-166';
 
--- GROUP BY: 分组查询
+-- GROUP BY: 分组查询 (查询每门课的平均成绩,不用再一个个算) 
+-- 先按课程号进行分组,再算每组的平均值
 SELECT c_no, AVG(degree) FROM score GROUP BY c_no;
 ```
 
@@ -473,6 +583,7 @@ SELECT c_no, AVG(degree) FROM score GROUP BY c_no
 
 -- 再查询出至少有 2 名学生选修的课程
 -- HAVING: 表示持有
+-- having和group by配合使用,用于对分组的过滤
 HAVING COUNT(c_no) >= 2
 
 -- 并且是以 3 开头的课程
@@ -482,13 +593,16 @@ AND c_no LIKE '3%';
 -- 把前面的SQL语句拼接起来，
 -- 后面加上一个 COUNT(*)，表示将每个分组的个数也查询出来。
 SELECT c_no, AVG(degree), COUNT(*) FROM score GROUP BY c_no
-HAVING COUNT(c_no) >= 2 AND c_no LIKE '3%';
+having COUNT(c_no) >= 2 AND c_no LIKE '3%';
 +-------+-------------+----------+
 | c_no  | AVG(degree) | COUNT(*) |
 +-------+-------------+----------+
 | 3-105 |     85.3333 |        3 |
 | 3-245 |     76.3333 |        3 |
 +-------+-------------+----------+
+
+-- count(*)---包括所有列，返回表中的记录数，相当于统计表的行数，在统计结果的时候，不会忽略列值为NULL的记录。
+-- count(列名)---只包括列名指定列，返回指定列的记录数，在统计结果的时候，会忽略列值为NULL的记录（不包括空字符串和0），即列值为NULL的记录不统计在内。
 ```
 
 ### 多表查询 - 1
@@ -592,6 +706,7 @@ SELECT s_no, c_no, degree FROM score;
 -- as 表示取一个该字段的别名。
 SELECT s_no, name as c_name, degree FROM score, course
 WHERE score.c_no = course.no;
+-- 注意 若两表中无相同字段 可以不用表名点字段,直接写为字段即可例c_no =no
 +------+-----------------+--------+
 | s_no | c_name          | degree |
 +------+-----------------+--------+
@@ -670,6 +785,7 @@ SELECT student.name as s_name, course.name as c_name, degree
 FROM student, score, course
 WHERE student.NO = score.s_no
 AND score.c_no = course.no;
+-- 注意 若多表中无相同字段 可以不用表名点字段,直接写为字段即可例c_no =no
 ```
 
 ### 子查询加分组求平均分
@@ -913,23 +1029,31 @@ SELECT * FROM score WHERE c_no IN (
 +------+-------+--------+
 ```
 
-### UNION 和 NOTIN 的使用
+### union 和 not in 的使用
 
 **查询 `计算机系` 与 `电子工程系` 中的不同职称的教师。**
 
 ```mysql
--- NOT: 代表逻辑非
+-- not in: not表非 not in表示不在这里面的
 SELECT * FROM teacher WHERE department = '计算机系' AND profession NOT IN (
     SELECT profession FROM teacher WHERE department = '电子工程系'
-)
--- 合并两个集
-UNION
-SELECT * FROM teacher WHERE department = '电子工程系' AND profession NOT IN (
+);
+-- union 求并集 用于合并两个或多个 SELECT 语句的结果集
+SELECT * FROM teacher WHERE department = '计算机系' AND profession NOT IN (
+    SELECT profession FROM teacher WHERE department = '电子工程系'
+) UNION SELECT * FROM teacher WHERE department = '电子工程系' AND profession NOT IN (
     SELECT profession FROM teacher WHERE department = '计算机系'
 );
+
+## 注意：
+-- UNION 内部的 SELECT 语句必须拥有相同数量的列；
+-- 列也必须拥有相似的数据类型（实际非必须）；
+-- 同时，每条 SELECT 语句中列的顺序必须相同。
+
+## UNION 结果集中的列名总是等于 UNION 中第一个 SELECT 语句中的列名,若想改合并后的列名,则在第一个 SELECT 语句中将列表通过as设置别名
 ```
 
-### ANY 表示至少一个 - DESC ( 降序 )
+### any 表示至少一个 - DESC ( 降序 )
 
 **查询课程 `3-105` 且成绩 <u>至少</u> 高于 `3-245` 的 `score` 表。**
 
@@ -955,7 +1079,7 @@ SELECT * FROM score WHERE c_no = '3-245';
 | 109  | 3-245 |     68 |
 +------+-------+--------+
 
--- ANY: 符合SQL语句中的任意条件。
+-- any: 符合SQL语句中的任意条件。
 -- 也就是说，在 3-105 成绩中，只要有一个大于从 3-245 筛选出来的任意行就符合条件，
 -- 最后根据降序查询结果。
 SELECT * FROM score WHERE c_no = '3-105' AND degree > ANY(
@@ -973,7 +1097,7 @@ SELECT * FROM score WHERE c_no = '3-105' AND degree > ANY(
 +------+-------+--------+
 ```
 
-### 表示所有的 ALL
+### all表示所有
 
 **查询课程 `3-105` 且成绩高于 `3-245` 的 `score` 表。**
 
@@ -1028,7 +1152,7 @@ SELECT degree FROM score;
 |     68 |
 |     81 |
 +--------+
-
+-- 复制表a 取名表b
 -- 将表 b 作用于表 a 中查询数据
 -- score a (b): 将表声明为 a (b)，
 -- 如此就能用 a.c_no = b.c_no 作为条件执行查询了。
@@ -1094,7 +1218,7 @@ SELECT class FROM student WHERE sex = '男' GROUP BY class HAVING COUNT(*) > 1;
 +-------+
 ```
 
-### NOTLIKE 模糊查询取反
+### not like 模糊查询取反
 
 **查询 `student` 表中不姓 "王" 的同学记录。**
 
@@ -1115,13 +1239,15 @@ mysql> SELECT * FROM student WHERE name NOT LIKE '王%';
 +-----+-----------+-----+------------+-------+
 ```
 
-### YEAR 与 NOW 函数
+### year 与 now 函数
 
 **查询 `student` 表中每个学生的姓名和年龄。**
 
 ```mysql
 -- 使用函数 YEAR(NOW()) 计算出当前年份，减去出生年份后得出年龄。
 SELECT name, YEAR(NOW()) - YEAR(birthday) as age FROM student;
+-- 计算当前年份
+SELECT YEAR(NOW());
 +-----------+------+
 | name      | age  |
 +-----------+------+
@@ -1143,6 +1269,7 @@ SELECT name, YEAR(NOW()) - YEAR(birthday) as age FROM student;
 **查询 `student` 表中最大和最小的 `birthday` 值。**
 
 ```mysql
+-- max()和min()是单纯比较数字大小,所以1977>1974而非按年龄来
 SELECT MAX(birthday), MIN(birthday) FROM student;
 +---------------+---------------+
 | MAX(birthday) | MIN(birthday) |
@@ -1151,11 +1278,13 @@ SELECT MAX(birthday), MIN(birthday) FROM student;
 +---------------+---------------+
 ```
 
-### 多段排序
+### 多字段排序order by
 
 **以 `class` 和 `birthday` 从大到小的顺序查询 `student` 表。**
 
 ```mysql
+-- class DESC逗号后再写一个birthday字段表多字段排序,若不写排序规则默认升序asc先小后大
+-- 这里出生年份数字越小,年龄越大,所以默认asc
 SELECT * FROM student ORDER BY class DESC, birthday;
 +-----+-----------+-----+------------+-------+
 | no  | name      | sex | birthday   | class |
@@ -1374,9 +1503,11 @@ SELECT * FROM person;
 
 分析两张表发现，`person` 表并没有为 `cardId` 字段设置一个在 `card` 表中对应的 `id` 外键。如果设置了的话，`person` 中 `cardId` 字段值为 `6` 的行就插不进去，因为该 `cardId` 值在 `card` 表中并没有。
 
-#### 内连接
+#### 内连接inner join 或 join
 
 要查询这两张表中有关系的数据，可以使用 `INNER JOIN` ( 内连接 ) 将它们连接在一起。
+
+内联查询其实就是两个表中的数据,通过某个字段相等,查询出相关结果。
 
 ```mysql
 -- INNER JOIN: 表示为内连接，将两张表拼接在一起。
@@ -1395,7 +1526,7 @@ SELECT * FROM person INNER JOIN card on person.cardId = card.id;
 
 > 注意：`card` 的整张表被连接到了右边。
 
-#### 左外连接
+#### 左外连接left join 或 left outer join
 
 完整显示左边的表 ( `person` ) ，右边的表如果符合条件就显示，不符合则补 `NULL` 。
 
@@ -1411,7 +1542,7 @@ SELECT * FROM person LEFT JOIN card on person.cardId = card.id;
 +------+--------+--------+------+-----------+
 ```
 
-#### 右外链接
+#### 右外连接right join或 right outer join
 
 完整显示右边的表 ( `card` ) ，左边的表如果符合条件就显示，不符合则补 `NULL` 。
 
@@ -1428,7 +1559,7 @@ SELECT * FROM person RIGHT JOIN card on person.cardId = card.id;
 +------+--------+--------+------+-----------+
 ```
 
-#### 全外链接
+#### (mysql不支持)全外连接full join或 full outer join
 
 完整显示两张表的全部数据。
 
@@ -1513,6 +1644,8 @@ SELECT * FROM user;
 
 可以看到，在执行插入语句后数据立刻生效，原因是 MySQL 中的事务自动将它**提交**到了数据库中。那么所谓**回滚**的意思就是，撤销执行过的所有 SQL 语句，使其回滚到**最后一次提交**数据时的状态。
 
+事务回滚：撤销sql语句执行效果；
+
 在 MySQL 中使用 `ROLLBACK` 执行回滚：
 
 ```mysql
@@ -1533,7 +1666,7 @@ SELECT * FROM user;
 -- 关闭自动提交
 SET AUTOCOMMIT = 0;
 
--- 查询自动提交状态
+-- 查询自动提交状态 1表开启 0表关闭
 SELECT @@AUTOCOMMIT;
 +--------------+
 | @@AUTOCOMMIT |
@@ -1580,7 +1713,7 @@ SELECT * FROM user;
 
 ```mysql
 INSERT INTO user VALUES (2, 'b', 1000);
--- 手动提交数据（持久性），
+-- 手动提交数据（持久性,即一旦提交就持久产生效果不可回滚），
 -- 将数据真正提交到数据库中，执行后不能再回滚提交过的数据。
 COMMIT;
 
@@ -1648,9 +1781,15 @@ SELECT * FROM user;
 
 这时我们又回到了发生意外之前的状态，也就是说，事务给我们提供了一个可以反悔的机会。假设数据没有发生意外，这时可以手动将数据真正提交到数据表中：`COMMIT` 。
 
-### 手动开启事务 - BEGIN / START TRANSACTION
+### 手动开启事务 - begin / start transaction
 
 事务的默认提交被开启 ( `@@AUTOCOMMIT = 1` ) 后，此时就不能使用事务回滚了。但是我们还可以手动开启一个事务处理事件，使其可以发生回滚：
+
+>两个brgin,第二个begin，会默认提交第一个begin的结果，隐式提交。
+>
+>事务里面套一个事务，第二个事务开始的时候相当于把第一个直接提交了。
+>
+>begin只针对当前sql语句开启事务
 
 ```mysql
 -- 使用 BEGIN 或者 START TRANSACTION 手动开启一个事务
@@ -1710,7 +1849,7 @@ ROLLBACK;
 - **A 原子性**：事务是最小的单位，不可以再分割；
 - **C 一致性**：要求同一事务中的 SQL 语句，必须保证同时成功或者失败；
 - **I 隔离性**：事务1 和 事务2 之间是具有隔离性的；
-- **D 持久性**：事务一旦结束 ( `COMMIT` ) ，就不可以再返回了 ( `ROLLBACK` ) 。
+- **D 持久性**：事务一旦结束 ( `COMMIT` ,`ROLLBACK`) ，就不可以再返回了 ( `ROLLBACK` ) 。
 
 ### 事务的隔离性
 
@@ -1720,11 +1859,11 @@ ROLLBACK;
 
    如果有多个事务，那么任意事务都可以看见其他事务的**未提交数据**。
 
-2. **READ COMMITTED ( 读取已提交 )**
+2. **READ COMMITTED ( 读取已提交  又叫不可重复读)**
 
    只能读取到其他事务**已经提交的数据**。
 
-3. **REPEATABLE READ ( 可被重复读 )**
+3. **REPEATABLE READ ( 幻读 可被重复读  ==MySQL的默认隔离级别==)**
 
    如果有多个连接都开启了事务，那么事务之间不能共享数据记录，否则只能共享已提交的记录。
 
@@ -1735,6 +1874,7 @@ ROLLBACK;
 查看当前数据库的默认隔离级别：
 
 ```mysql
+-- 不同版本的命令
 -- MySQL 8.x, GLOBAL 表示系统级别，不加表示会话级别。
 SELECT @@GLOBAL.TRANSACTION_ISOLATION;
 SELECT @@TRANSACTION_ISOLATION;
@@ -1764,7 +1904,7 @@ SELECT @@GLOBAL.TRANSACTION_ISOLATION;
 +--------------------------------+
 ```
 
-#### 脏读
+#### 读取未提交(脏读)
 
 测试 **READ UNCOMMITTED ( 读取未提交 )** 的隔离性：
 
@@ -1820,7 +1960,7 @@ SELECT * FROM user;
 
 这就是所谓的**脏读**，一个事务读取到另外一个事务还未提交的数据。这在实际开发中是不允许出现的。
 
-#### 读取已提交
+#### 读取已提交(又叫不可重复读)
 
 把隔离级别设置为 **READ COMMITTED** ：
 
@@ -1912,7 +2052,7 @@ SELECT AVG(money) FROM user;
 
 虽然 **READ COMMITTED** 让我们只能读取到其他事务已经提交的数据，但还是会出现问题，就是**在读取同一个表的数据时，可能会发生前后不一致的情况。**这被称为**不可重复读现象 ( READ COMMITTED )** 。
 
-#### 幻读
+#### 幻读(可重复读)
 
 将隔离级别设置为 **REPEATABLE READ ( 可被重复读取 )** :
 
@@ -2011,3 +2151,7 @@ INSERT INTO user VALUES (7, '王小花', 1000);
 此时会发生什么呢？由于现在的隔离级别是 **SERIALIZABLE ( 串行化 )** ，串行化的意思就是：假设把所有的事务都放在一个串行的队列中，那么所有的事务都会按照**固定顺序执行**，执行完一个事务后再继续执行下一个事务的**写入操作** ( **这意味着队列中同时只能执行一个事务的写入操作** ) 。
 
 根据这个解释，小王在插入数据时，会出现等待状态，直到小张执行 `COMMIT` 结束它所处的事务，或者出现等待超时。
+
+当表被另外一个事务操作的时候,其他事务里面的写入操作,是不可进行的。直到进入排队状态即串行化状态即一方执行了提交操作后另一方写入操作才会被执行（前提：在没有等待超时的时候）
+
+串行化带来的问题是：性能差
