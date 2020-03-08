@@ -69,14 +69,50 @@ SELECT * from pet;
 -- 根据条件查询表中记录                    (id为字段 0为字段下的记录 若记录是字符串需加引号否则报错)
 SELECT * FROM pet WHERE id=0;
 
--- 插入数据																											(存储字符串和时间需用单引号包裹)
-INSERT INTO pet VALUES ('puffball', 'Diane', 'hamster', 'f', '1990-03-30', NULL);
+-- 插入数据(共五种方式)																					(存储字符串和时间需用单引号包裹)
+## insert into ....values(三种方式)		
+-- 方式一 给所有字段赋值
+-- 字段数量和值的数量要匹配，哪怕允许为空的值，也要写null占位置，插入的数据可以传null或者default ,后者表使用默认值
+INSERT INTO pet VALUES ('puffball', 'Diane', 'hamster', 'f', '1990-03-30', NULL);\
+
+-- 方式二 给特定字段赋值(推荐)
+-- 值的数量和前面字段数量匹配
+INSERT INTO 表名(字段1,字段2) VALUES (字段1的值,字段2的值)
+-- 赋值注意事项:
+-- 主键如果设定了auto_increment可以不赋值,会自增
+-- 设置了非空约束,同时也设置了默认值的,可以不赋值,其余非空字段必须赋值
+
+-- 方式三 同时添加多行记录
+-- 逗号隔开 继续写（内容）
+insert into 表名(字段1,字段2) values(第一行的值1,第一行的值2),(第二行的值1,第二行的值2);
+
+## 方式四 insert into ....set
+-- 插入指定字段记录
+-- 不能一次性向表中插入多条记录
+INSERT INTO 表名 set 字段1='值',字段2='值';
+
+-- 方式五 复制表中数据
+-- a为有内容的表 b为空表  b复制a的内容
+-- 把a表字段1,2的值选出来,插入到b表的字段1,2里面
+inset into b(字段1,字段2) select a表的字段1,a表的字段2 from a;
+
+
 
 -- 修改数据																(pet表名 squirrel新数据 owner = 'Diane'根据条件查找)
+-- 注意：一般修改表数据都要带条件，否则会改该字段下的所有值。
 UPDATE pet SET name = 'squirrel' where owner = 'Diane';
+-- 修改多个数据，逗号隔开
+UPDATE pet SET name='squirrel',age=66 where owner = 'Diane';
 
 -- 删除数据
+-- 使用delete from删除表中数据时,auto_increment自动增长的值不会重置,例删除数据的id是1、2、3,那后面我再添加数据也是4开始,不会从1开始。
+-- 删除指定数据 自动增长的值不会重置
 DELETE FROM pet where name = 'squirrel';
+-- 删除表中所有数据(两种方式)
+-- 方式一 自动增长的值不会重置
+DELETE FROM pet;
+-- 方式二 截断表,自动增长的值会重置 此关键字语法只能删全部 无法根据删除指定数据
+truncate table pet;
 
 -- 删除表
 DROP TABLE myorder;
@@ -105,6 +141,12 @@ alter  table table1 modify column1  decimal(10,1) DEFAULT NULL COMMENT -- '注�
 ## mysql修改字段名：必须指定数据类型
 ALTER  TABLE 表名 CHANGE 旧字段名 新字段名 新数据类型 位置;	 
 alter  table table1 change column1 column1 varchar(100) DEFAULT 1.2 COMMENT '注释'; 
+## 设置类型为enum枚举 值只能为范围中三个任选其一
+ALTER TABLE student ADD state ENUM('在校','毕业','退学');
+
+## (设置无效)
+-- 字段添加约束并约束命名 约定内容只能在这里面选 也可以用>选范围能 关键字check
+ALTER TABLE student ADD CONSTRAINT ck_state CHECK(state IN('在校','毕业','退学'))
 ```
 
 ## 建表约束
@@ -133,12 +175,16 @@ CREATE TABLE user (
 
 -- 自增约束
 -- 自增约束的主键由系统自动递增分配。auto_increment
+-- 如果某个列是整数类型,可以使用auto_increment来指定该字段的值自动增长,每张表只能设置一个字段自动增长,不能设两个字段增长。
+-- 自增约束的前提:整数数据类型、是主键
 CREATE TABLE user (
     id INT primary key auto_increment,
     name VARCHAR(20)
 );
 -- 设置自增约束后如何使用。（表只添加name字段的记录，id由1开始递增,也可(name,id)表只插入这两个）
 INSERT INTO b (name) VALUES ('zs');
+-- 创建表后添加自增约束
+ALTER TABLE user MODIFY id INT PRIMARY KEY AUTO_INCREMENT;
 
 -- 添加主键约束
 -- 如果忘记设置主键，还可以通过SQL语句设置（两种方式）：
