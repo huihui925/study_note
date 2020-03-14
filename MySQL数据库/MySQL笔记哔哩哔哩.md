@@ -1,4 +1,4 @@
-# ![image-20200311141058080](MySQL笔记哔哩哔哩.assets/image-20200311141058080.png)MySQL学习笔记
+# ![image-20200313141556021](MySQL笔记哔哩哔哩.assets/image-20200313141556021.png)![image-20200311141058080](MySQL笔记哔哩哔哩.assets/image-20200311141058080.png)MySQL学习笔记
 
 ## 登录和退出MySQL服务器
 
@@ -588,9 +588,19 @@ SELECT AVG(degree) FROM score WHERE c_no = '3-245';
 SELECT AVG(degree) FROM score WHERE c_no = '6-166';
 
 -- GROUP BY: 分组查询 (查询每门课的平均成绩,不用再一个个算) 
--- 先按课程号进行分组,再算每组的平均值
+-- 先按课程号进行分组,再算每组的平均值 注意:GROUP BY里面不能使用聚合函数
 SELECT c_no, AVG(degree) FROM score GROUP BY c_no;
 ```
+
+![image-20200313134145506](MySQL笔记哔哩哔哩.assets/image-20200313134145506.png)
+
+count(计数) sum(求和) max(最大值) min(最小值) avg(平均值)
+
+![image-20200313134615065](MySQL笔记哔哩哔哩.assets/image-20200313134615065.png)
+
+### having分组后的条件过滤
+
+![image-20200313140423896](MySQL笔记哔哩哔哩.assets/image-20200313140423896.png)
 
 ### 分组条件与模糊查询
 
@@ -768,6 +778,25 @@ WHERE score.c_no = course.no;
 +------+-----------------+--------+
 ```
 
+### 别名
+
+可以通过as取别名 也可空格直接写别名
+
+```mysql
+-- as 表示取一个该字段的别名。
+SELECT s_no, name as c_name, degree FROM score, course
+```
+
+
+
+![image-20200313111330964](MySQL笔记哔哩哔哩.assets/image-20200313111330964.png)
+
+### 正则表达式查询
+
+这里只简单写几个正则表达式案例，符号很多 自行百度
+
+![image-20200313141602120](MySQL笔记哔哩哔哩.assets/image-20200313141602120.png)
+
 ### 三表关联查询
 
 **查询所有学生的 `name` 、课程名 ( `course` 表中的 `name` ) 和 `degree` 。**
@@ -833,6 +862,18 @@ WHERE student.NO = score.s_no
 AND score.c_no = course.no;
 -- 注意 若多表中无相同字段 可以不用表名点字段,直接写为字段即可例c_no =no
 ```
+
+### 子查询
+
+![image-20200313115639028](MySQL笔记哔哩哔哩.assets/image-20200313115639028.png)
+
+### exists子查询
+
+![image-20200313130057232](MySQL笔记哔哩哔哩.assets/image-20200313130057232.png)
+
+若为空 最后结果是一张空表 没任何结果
+
+
 
 ### 子查询加分组求平均分
 
@@ -1099,7 +1140,7 @@ SELECT * FROM teacher WHERE department = '计算机系' AND profession NOT IN (
 ## UNION 结果集中的列名总是等于 UNION 中第一个 SELECT 语句中的列名,若想改合并后的列名,则在第一个 SELECT 语句中将列表通过as设置别名
 ```
 
-### any 表示至少一个 - DESC ( 降序 )
+### any 表示至少满足一个 - DESC ( 降序 )
 
 **查询课程 `3-105` 且成绩 <u>至少</u> 高于 `3-245` 的 `score` 表。**
 
@@ -1143,6 +1184,10 @@ SELECT * FROM score WHERE c_no = '3-105' AND degree > ANY(
 +------+-------+--------+
 ```
 
+### some满足一个就行
+
+some和any只有关键字不同,实现的效果都一样,表示满足其中一个就行
+
 ### all表示所有
 
 **查询课程 `3-105` 且成绩高于 `3-245` 的 `score` 表。**
@@ -1164,6 +1209,8 @@ SELECT * FROM score WHERE c_no = '3-105' AND degree > ALL(
 | 105  | 3-105 |     88 |
 +------+-------+--------+
 ```
+
+
 
 ### 复制表的数据作为条件查询
 
@@ -1508,6 +1555,8 @@ WHERE degree BETWEEN low AND upp;
 
 ### 连接查询
 
+![image-20200313112828916](MySQL笔记哔哩哔哩.assets/image-20200313112828916.png)
+
 准备用于测试连接查询的数据：
 
 ```mysql
@@ -1549,11 +1598,11 @@ SELECT * FROM person;
 
 分析两张表发现，`person` 表并没有为 `cardId` 字段设置一个在 `card` 表中对应的 `id` 外键。如果设置了的话，`person` 中 `cardId` 字段值为 `6` 的行就插不进去，因为该 `cardId` 值在 `card` 表中并没有。
 
-#### 内连接inner join 或 join
+#### 内连接inner join 或 join(两种方式)
 
 要查询这两张表中有关系的数据，可以使用 `INNER JOIN` ( 内连接 ) 将它们连接在一起。
 
-内联查询其实就是两个表中的数据,通过某个字段相等,查询出相关结果。
+内联查询其实就是两个表中的数据,通过某个字段相等,查询出相关结果。 on是连接条件
 
 ```mysql
 -- INNER JOIN: 表示为内连接，将两张表拼接在一起。
@@ -1570,7 +1619,21 @@ SELECT * FROM person INNER JOIN card on person.cardId = card.id;
 -- SELECT * FROM person JOIN card on person.cardId = card.id;
 ```
 
-> 注意：`card` 的整张表被连接到了右边。
+> 注意：`card` 的整张表被连接到了右边
+
+也可加where语句 注意on是连接条件,where是不同的,on必须要
+
+![image-20200313111529044](MySQL笔记哔哩哔哩.assets/image-20200313111529044.png)
+
+若不写on连接条件则会出现笛卡尔积这种情况,用on则避免,一般来说on是使用外键来做连接条件
+
+![image-20200313111750902](MySQL笔记哔哩哔哩.assets/image-20200313111750902.png)
+
+**连接查询语法二:**
+
+![image-20200313112012336](MySQL笔记哔哩哔哩.assets/image-20200313112012336.png)
+
+
 
 #### 左外连接left join 或 left outer join
 
@@ -1679,7 +1742,7 @@ regexp：正则表达式
 
 ![image-20200311141943288](MySQL笔记哔哩哔哩.assets/image-20200311141943288.png)
 
-#### **is null，is not null，least()，greatest()**
+#### **is null，is not null，least()最小值，greatest()最大值**
 
 ![image-20200311142636637](MySQL笔记哔哩哔哩.assets/image-20200311142636637.png)
 
@@ -1851,6 +1914,12 @@ SELECT * FROM user;
 +----+------+-------+
 ```
 
+**设置回滚点的 和 回到回滚点的状态**
+
+![image-20200313144615111](MySQL笔记哔哩哔哩.assets/image-20200313144615111.png)
+
+![image-20200313160547102](MySQL笔记哔哩哔哩.assets/image-20200313160547102.png)
+
 那如何将虚拟的数据真正提交到数据库中？使用 `COMMIT` : 
 
 ```mysql
@@ -1992,6 +2061,8 @@ ROLLBACK;
 - **C 一致性**：要求同一事务中的 SQL 语句，必须保证同时成功或者失败；
 - **I 隔离性**：事务1 和 事务2 之间是具有隔离性的；
 - **D 持久性**：事务一旦结束 ( `COMMIT` ,`ROLLBACK`) ，就不可以再返回了 ( `ROLLBACK` ) 。
+
+![image-20200313161658413](MySQL笔记哔哩哔哩.assets/image-20200313161658413.png)
 
 ### 事务的隔离性
 
@@ -2296,4 +2367,10 @@ INSERT INTO user VALUES (7, '王小花', 1000);
 
 当表被另外一个事务操作的时候,其他事务里面的写入操作,是不可进行的。直到进入排队状态即串行化状态即一方执行了提交操作后另一方写入操作才会被执行（前提：在没有等待超时的时候）
 
-串行化带来的问题是：性能差
+串行化带来的问题是：性能差，效率低，对数据库性能消耗巨大，一般不会使用
+
+
+
+**另一个视频的笔记，感觉笔记有问题，不建议参考**
+
+![image-20200313164950553](MySQL笔记哔哩哔哩.assets/image-20200313164950553.png)

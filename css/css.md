@@ -83,3 +83,14 @@ width:30%
 //当左浮动后会自动变成上面效果图样子，父元素清除浮动则有高度，这样不用再左右分开写html，可以直接循环标签布局，很方便
 ```
 
+## 两行省略小圆点
+
+```css
+{
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;   /*几行省略 就写数字几,这里是两行省略所以写的2*/
+}
+```
+
