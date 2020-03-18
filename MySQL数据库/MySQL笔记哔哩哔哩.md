@@ -1,4 +1,4 @@
-# ![image-20200313141556021](MySQL笔记哔哩哔哩.assets/image-20200313141556021.png)![image-20200311141058080](MySQL笔记哔哩哔哩.assets/image-20200311141058080.png)MySQL学习笔记
+# MySQL学习笔记
 
 ## 登录和退出MySQL服务器
 
@@ -2374,3 +2374,303 @@ INSERT INTO user VALUES (7, '王小花', 1000);
 **另一个视频的笔记，感觉笔记有问题，不建议参考**
 
 ![image-20200313164950553](MySQL笔记哔哩哔哩.assets/image-20200313164950553.png)
+
+## 用户管理
+
+### 查看用户
+
+```mysql
+-- 查询当前系统有哪些用户
+-- 数据库的用户都存在mysql的user表里面
+SELECT USER,HOST FROM MYSQL.USER;
++-----------+-----------+
+| USER      | HOST      |
++-----------+-----------+
+| mysql.sys | localhost |
+| mysqlxsys | localhost |
+| root      | localhost |
++-----------+-----------+
+```
+
+### 创建用户
+
+```mysql
+-- 创建用户
+-- create user 'user_name'@'host' identified by 'password'
+-- user_name:创建的用户名
+-- host:主机名,表示该用户允许从哪台机器登录,如果只允许本机:localhost,如果允许从远程登录:% 用一个通配符表示就行了
+-- identified by  关键字 不管
+-- password:用户密码
+
+CREATE USER 'zangsan'@'localhost' IDENTIFIED BY '111111';
+-- 若只执行下面这句 表示创建用户,不设置密码
+CREATE USER 'zangsan'@'localhost'
+-- 表示创建的用户不在本机上也可以登录
+CREATE USER 'zangsan'@'%' IDENTIFIED BY '111111';
+```
+
+```mysql
+mysql> SELECT USER,HOST FROM MYSQL.USER;
++-----------+-----------+
+| USER      | HOST      |
++-----------+-----------+
+| mysql.sys | localhost |
+| mysqlxsys | localhost |
+| root      | localhost |
+| zangsan   | localhost |
++-----------+-----------+
+```
+
+
+
+### 修改用户
+
+> 修改用户名和密码 , 修改权限在**用户授权**模块单独讲
+
+##### 修改用户名
+
+```mysql
+-- RENAME USER 旧用户 TO 新用户;
+-- 将zangsan改为lisi , 且把主机名也改了
+RENAME USER 'zangsan'@'localhost' TO 'lisi'@'%';
+```
+
+```mysql
+mysql> SELECT USER,HOST FROM MYSQL.USER;
++-----------+-----------+
+| USER      | HOST      |
++-----------+-----------+
+| lisi      | %         |
+| mysql.sys | localhost |
+| mysqlxsys | localhost |
+| root      | localhost |
++-----------+-----------+
+```
+
+##### 修改用户密码
+
+```mysql
+-- 设置用户密码 for表示为了 后面跟着用户 即对谁设置密码 = 右边是设置的密码
+-- 语法:SET PASSWORD FOR 用户 = 新密码;
+SET PASSWORD FOR 'lisi'@'%'='222222';
+```
+
+### 删除用户
+
+```mysql
+-- 可以删除多个用户
+-- 语法:DROP USER 用户名1,用户名2,......用户名n; 
+DROP USER 'lisi';
+```
+
+### 查看用户权限
+
+```mysql
+-- 查看用户具备的权限
+show grants for 'zangsan'@'%';
+```
+
+```mysql
+mysql> SHOW GRANTS FOR 'zangsan'@'%';
++-------------------------------------+
+| Grants for zangsan@%                |
++-------------------------------------+
+| GRANT USAGE ON *.* TO 'zangsan'@'%' |
++-------------------------------------+
+-- USAGE ON:代表当前用户没有任何权限
+```
+
+### 用户授权
+
+创建用户后,该用户是没有权限对数据库进行操作的,即使用户可以登陆成功.
+
+对一个新创建的用户而言,需要授权后该用户才可以操作数据库
+
+**注意**:给新建用户授权时,当前用户必须具备授权的权限
+
+**给新用户授权: **
+
+```mysql
+## 方法一. 授予所有权限 此操作用得多
+-- 要授予的权限:select\insert\update\delete等,可以使用all表示让新用户拥有所有权限
+-- 数据库名.表名:
+-- *.* 表示让新用户拥有所有数据库所有表的权限,点号左边的*表所有数据库,右边的*表所有表
+-- 数据库名.* 表示让用户拥有操作某个数据库的所有表的权限
+-- 数据库名.表名  表示指定数据库的指定表 
+
+注意: all 和 *.* 代表和超级用户一样的权限,一般也不会这么做, 比如有些只给所有数据库所有表的查询权限
+注意: 所有权限并不会把精细化权限覆盖掉
+GRANT ALL ON *.* TO 'zangsan'@'%';
+mysql> SHOW GRANTS FOR 'zangsan'@'%';
++----------------------------------------------------+
+| Grants for zangsan@%                               |
++----------------------------------------------------+
+| GRANT ALL PRIVILEGES ON *.* TO 'zangsan'@'%'       |
+| GRANT SELECT ON `studb`.`student` TO 'zangsan'@'%' |
++----------------------------------------------------+
+
+
+## 方法二. 小范围的授权,此操作用得少
+
+-- 语法: GRANT 要授予的权限 on 数据库名.表名 to 用户
+-- 授予这些权限 操作哪个数据库的哪个表的权限 给某用户
+-- 授予成功后,表示zangsan用户已经拥有查询studb数据库内的student表的权限,只能做查询这个数据库的这张表,不能做其他增删改或其他表任何操作,当然正常情况下我们不可能授权这么细致
+GRANT SELECT ON studb.student TO 'zangsan'@'%';
+mysql> SHOW GRANTS FOR 'zangsan'@'%';
++----------------------------------------------------+
+| Grants for zangsan@%                               |
++----------------------------------------------------+
+| GRANT USAGE ON *.* TO 'zangsan'@'%'                |
+| GRANT SELECT ON `studb`.`student` TO 'zangsan'@'%' |
++----------------------------------------------------+
+```
+
+### 删除用户权限
+
+**注意:** **权限怎么设定的怎么取消,不能用一个all把其他命令设定的取消,all权限并不会把精细化权限覆盖掉**
+
+​		 **权限被授予时如何设置的,撤销时也只能以相同设置撤销,否则撤销无效**
+
+例如:先赋予了一个查询权限,后又加了一个赋予所有权限,那么即使执行了撤销所有权限的命令,查询权限依然有,需单独撤销对应命令的.
+
+```mysql
+-- 撤销用户权限
+-- revoke 要撤销的权限 on 数据库名.表名 from 用户
+REVOKE ALL ON *.* FROM 'zangsan'@'%';
+
+```
+
+## 数据备份与恢复
+
+​		物理的备份(不建议使用): 相当于把数据库文件ctrl+c ctrl+v复制和粘贴,此时系统还在运行,做备份前就应该把数据库服务停了,还有个服务是不支持innodb引擎,不同版本间的mysql 不兼容,有很大问题,一般不建议使用.
+
+### 数据库备份(方式一：mysqldump 是DOS命令)
+
+​		真正做备份是通过命令进行备份,是通过导出数据或复制表文件的方式来制作数据库的副本,当数据库出现故障或遭到破坏时,将备份的数据库加载到系统,从而使数据库从错误状态恢复到正确状态
+
+​		使用的工具:mysqldump实现备份              此工具在安装的bin目录下有
+
+​		mysqldump命令不是SQL命令,是DOS命令,因此不能在mysql中使用,不能在mysql环境中用,直接在命令行cmd里面用,而且要进入到这个bin目录下才能使用
+
+```
+ 语法: mysqldump -u用户名 -p密码 -h主机 要备份的数据库名 > 备份到哪个地方写路径
+
+\> 这个符号表示把左边备份的内容输出到右边的地址,备份出去结尾是一个后缀为.sql的脚本 这个名字的文件执行命令自己创建 注意这不是SQL 结束没有分号
+```
+
+```shell
+## 备份单个数据库
+-- 执行此命令
+mysqldump -uroot -p123456 -hlocalhost studb > C:\Users\35614\Desktop\studb.sql
+
+-- 执行出现此提示表示 执行成功
+mysqldump: [Warning] Using a password on the command line interface can be insecure.
+
+## 备份数据库的特定表 
+--备份studb数据库的student表 数据库名后面空格 再加表名即可
+-- 命令太长所以换行 实际是一行
+mysqldump -uroot -p123456 -hlocalhost studb student > C:\Users\35614\Desktop\studb_student.sql
+
+## 备份数据库的多个指定表
+-- 注意:表与表之间别用逗号 使用空格隔开 这里备份studb数据库的student和staff表 多个表就继续空格写
+mysqldump -uroot -p123456 -hlocalhost studb student staff > C:\Users\35614\Desktop\studb_student_staff.sql
+
+## 备份多个数据库 
+-- 数据库前加关键字 --databases 后面写多个数据库名 空格隔开 这里备份studb和world 数据库
+mysqldump -uroot -p123456 -hlocalhost --databases studb world > C:\Users\35614\Desktop\studb_world.sql
+
+## 备份所有数据库 
+-- 这里就不写数据库名了 把--databases改为 --all-databases   注意:这里前有两杠 后只有一杠
+mysqldump -uroot -p123456 -hlocalhost --all-databases > C:\Users\35614\Desktop\all_databases.sql 
+```
+
+### 数据库的表备份和恢复(方式二：SQL语句 这方式太麻烦 不建议用)
+
+#### **表导出（备份）**
+
+表示将查询到的内容 输出到指定文件路径里面 这个名字的文件执行命令自己创建
+
+语法 ：select 字段 from 表名 into outfile  '文件路径'
+
+**注意：**
+
+​		1.mysql有设置，指定导出文件必须在哪个路径下，其他路径会报错
+
+​		2.mysql安装完成后默认指定的文件存放路径 C:\ProgramData\MySQL\MySQL Server 5.7\Uploads\
+
+​		3.实际写SQL语句时，路径需要将 \ 改为 / ,这是微软规定的
+
+​		4. 在软件里若直接复制路径，大小写有时候会自己改变，建议有关路径的操作都在终端运行，在mysql软件容易报错。
+
+```mysql
+-- 查看默认文件导出路径 
+
+SHOW VARIABLES LIKE '%secure%';
+
+mysql> SHOW VARIABLES LIKE '%secure%';
++--------------------------+------------------------------------------------+
+| Variable_name            | Value                                          |
++--------------------------+------------------------------------------------+
+| require_secure_transport | OFF                                            |
+| secure_auth              | ON                                             |
+| secure_file_priv         | C:\ProgramData\MySQL\MySQL Server 5.7\Uploads\ |
++--------------------------+------------------------------------------------+
+```
+
+```mysql
+-- 指定备份导出命令
+SELECT * FROM staff INTO OUTFILE 'C:/ProgramData/MySQL/MySQL Server 5.7/Uploads/staff.sql';
+```
+
+
+
+#### **表导入（恢复）**
+
+```mysql
+-- 把指定路径的数据加载出来放到这个表里面去
+
+load data infile '脚本全路径' into table '表名'
+
+-- 此表的结构必须和导入数据的结构一致 否则报错 此时可以执行下面命令查看数据源表建表语句，复制建表语句再执行，创建同结构的相同表(不能创建外键 会报错)，然后再执行上面的表导入恢复操作。
+SHOW CREATE TABLE staff;
+```
+
+
+
+### 数据库恢复(方式一: mysql 是DOS命令)
+
+​		数据库恢复以备份为基础
+
+​		mysql工具进行恢复
+
+​		mysql命令也是DOS命令,mysql里面是sql语句不是mysql命令,所以下面命令在cmd里面执行
+
+​		先有数据库才能将东西备份回来,因需拿容器装
+
+```shell
+## cmd执行此命令
+## < 表示把右边的数据往左边移动, 把右边路径的studb数据 恢复到左边的studb1数据库里面
+## 需要创建个数据库studb1来接收studb里面的所有数据,必须有个接收数据的数据库存在
+-- 语法： mysql -u用户名 -p密码 数据库名 < 要备份的脚本全路径
+mysql -uroot -p123456 studb1 <  C:\Users\35614\Desktop\studb.sql
+```
+
+### 数据库恢复(方式二: source 是SQL语句)
+
+​		source命令来恢复数据库
+
+​		source命令是一个SQL命令, 所以只能登陆了mysql才可以使用
+
+​		**注意 :** 
+
+​			1.这条命令在mysql软件中执行会报错 在cmd的mysql内执行不会报错 
+
+​			2.在命令行执行此命令时 **末尾不能加分号，加了会报错**
+
+​			3.source恢复数据库时 **路径不能加引号 不能为字符串 加了会报错**
+
+```sql
+-- 先登录 再use使用数据库 执行以下命令: 表示把这个路径的数据 备份到当前数据库
+-- 语法： source 备份的脚本全路径        -- 注意 这句末尾不能加分号 路径不能加引号
+source C:\Users\35614\Desktop\studb.sql    
+```
