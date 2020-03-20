@@ -83,7 +83,21 @@ width:30%
 //当左浮动后会自动变成上面效果图样子，父元素清除浮动则有高度，这样不用再左右分开写html，可以直接循环标签布局，很方便
 ```
 
+## 一行省略小圆点
+
+```css
+{
+  white-space:nowrap;
+	overflow:hidden;
+	text-overflow:ellipsis;
+}
+```
+
+
+
 ## 两行省略小圆点
+
+注意： 若只有一行就别用这个多行方法，会有部分露出来
 
 ```css
 {
@@ -91,6 +105,18 @@ width:30%
   overflow: hidden;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;   /*几行省略 就写数字几,这里是两行省略所以写的2*/
+}
+```
+
+# [filter](https://www.runoob.com/cssref/css3-pr-filter.html)图像模糊
+
+filter(滤镜) 属性,更多效果看本地
+
+```css
+//图片使用高斯模糊效果：
+img {
+    -webkit-filter: blur(5px); /* Chrome, Safari, Opera */
+    filter: blur(5px);
 }
 ```
 

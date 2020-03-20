@@ -2584,7 +2584,7 @@ mysqldump -uroot -p123456 -hlocalhost --databases studb world > C:\Users\35614\D
 mysqldump -uroot -p123456 -hlocalhost --all-databases > C:\Users\35614\Desktop\all_databases.sql 
 ```
 
-### 数据库的表备份和恢复(方式二：SQL语句 这方式太麻烦 不建议用)
+### 数据库的表备份和恢复(方式二：SQL语句 ==这方式太麻烦 不建议用)==
 
 #### **表导出（备份）**
 
