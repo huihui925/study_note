@@ -1,0 +1,121 @@
+page{
+  background-color: rgb(236, 237, 234);
+  padding-bottom:60rpx;
+
+}
+.userInfo_warp {
+  height: 45vh;
+  background: var(--themeColor);
+  overflow: hidden;
+  position: relative;
+  .userInfo_image_warp {
+    position: relative;
+    >image {
+      height: 50vh;
+      filter: blur(10rpx);
+      width: 110%;
+      margin-left: -5%;
+      margin-bottom: -5%;
+      
+    }
+
+    view.userInfo {
+      position: absolute;
+      top:20%;
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+      image {
+        width: 150rpx;
+        height: 150rpx;
+        border-radius: 50%;
+      }
+
+      view.userName {
+        margin-top: 50rpx;
+        color: #fff;
+        font-size: 40rpx;
+      }
+    }
+  }
+  .userInfo_login_btn{
+    text-align: center;
+    top: 30%;
+    position: absolute;
+    
+      border-radius: 10rpx;
+      border: 2rpx solid #8fec75;
+      color: #8fec75;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 45rpx;
+    navigator{
+      padding: 20rpx 50rpx;
+    }
+  }
+}
+.user_content_warp{
+  padding: 0 2%;
+  color:#666;
+  .user_content{
+    padding-top: 50rpx;
+    position: relative;
+    .user_his_warp {
+      position: absolute;
+      left: 50%;
+      top: -60rpx;
+      transform: translateX(-50%);
+      width: 100%;
+      display: flex;
+      padding: 15rpx;
+      background-color: #fff;
+      .user_his_item {
+        flex: 1;
+        text-align: center;
+        .his_num {
+          color: var(--themeColor);
+        }
+      }
+    }
+    .user_order_warp {
+      margin-top: 20rpx;
+      background-color: #fff;
+      .order_title {
+        padding: 20rpx;
+        border-bottom: 1rpx solid #ccc;
+      }
+      .user_order_content {
+        padding: 15rpx;
+        display: flex;
+        .user_order_item {
+          flex: 1;
+        text-align: center;
+          .iconfont{
+            color: var(--themeColor);
+            font-size: 45rpx;
+          }
+        }
+      }
+    }
+    
+    .user_address_warp {
+    padding: 20rpx;
+   margin-top: 20rpx;
+    background-color: #fff;
+    
+    }
+    
+    .user_contact_warp{
+      margin-top: 20rpx;
+    background-color: #fff;
+      .user_contact_item{
+        padding: 20rpx;
+        border-bottom: 1px solid #ccc;
+      }
+      .contact_service{
+        display: flex;
+        justify-content: space-between;
+      }
+    }
+  }
+}

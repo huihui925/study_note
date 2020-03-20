@@ -1,0 +1,64 @@
+<view class="userInfo_warp">
+  <view class="userInfo_image_warp" wx:if="{{userInfoFlag}}">
+    <image class="" src="https://wx.qlogo.cn/mmopen/vi_32/pe85EKTajkgPAQ6ewuEFudmNd4sMpNvjG76s5X3eeMnuD3I872h3hr0T82IKotoMM8oSmFgW6waHJGVgIJU7Xg/132"></image>
+    <view class="userInfo">
+      <image class="" src="https://wx.qlogo.cn/mmopen/vi_32/pe85EKTajkgPAQ6ewuEFudmNd4sMpNvjG76s5X3eeMnuD3I872h3hr0T82IKotoMM8oSmFgW6waHJGVgIJU7Xg/132"></image>
+      <view class="userName">晓晓</view>
+    </view>
+  </view>
+  <view wx:else class="userInfo_login_btn">
+    <navigator class="" target="" url="../login/index">登录</navigator>
+  </view>
+</view>
+<view class="user_content_warp">
+  <view class="user_content">
+    <view class="user_his_warp">
+      <navigator url="" class="user_his_item">
+        <view class="his_num">0</view>
+        <view>收藏的店铺</view>
+      </navigator>
+      <navigator url="../collect/index" class="user_his_item">
+        <view class="his_num">{{collectNum}}</view>
+        <view>收藏的商品</view>
+      </navigator>
+      <navigator url="" class="user_his_item">
+        <view class="his_num">0</view>
+        <view>关注的商品</view>
+      </navigator>
+      <navigator url="" class="user_his_item">
+        <view class="his_num">0</view>
+        <view>我的足迹</view>
+      </navigator>
+    </view>
+    <view class="user_order_warp">
+      <view class="order_title">我的订单</view>
+      <view class="user_order_content">
+        <navigator url="../order/index?type=1" class="user_order_item">
+          <view class="iconfont icon-tubiaolunkuo-"></view>
+          <view>全部订单</view>
+        </navigator>
+        <navigator url="../order/index?type=2" class="user_order_item">
+          <view class="iconfont icon-fukuantongzhi"></view>
+          <view>待付款</view>
+        </navigator>
+        <navigator url="../order/index?type=3" class="user_order_item">
+          <view class="iconfont icon-daishouhuo"></view>
+          <view>待收货</view>
+        </navigator>
+        <navigator url="../order/index?type=4" class="user_order_item">
+          <view class="iconfont icon-tuikuan"></view>
+          <view>退款/退货</view>
+        </navigator>
+      </view>
+    </view>
+    <view class="user_address_warp">收货地址管理</view>
+    <view class="user_contact_warp">
+      <view class="contact_service user_contact_item">
+        <view>联系客服</view>
+        <view>联系我们</view>
+      </view>
+      <navigator class="user_contact_item" url="../feedback/index">意见反馈</navigator>
+      <view class="user_contact_item">关于我们</view>
+    </view>
+  </view>
+</view>

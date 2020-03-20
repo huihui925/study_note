@@ -1,0 +1,34 @@
+.goodsList{
+  .goods_tab1{
+    .content_group{
+      display: flex;
+      border-bottom: 3rpx solid #ccc;
+      .goods_image_left{
+        flex: 2;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        image{
+          width: 70%;
+        }
+      }
+      .goods_info_right{
+        flex: 3;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+        .title{
+          display: -webkit-box;
+          overflow: hidden;
+          -webkit-box-orient: vertical;
+          -webkit-line-clamp: 2;
+        }
+        .price{
+          color: var(--themeColor);
+          font-size: 32rpx;
+        }
+      }
+    }
+  }
+
+}

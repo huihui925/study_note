@@ -1,0 +1,44 @@
+swiper{
+  height: auto;
+}
+.index_cate{
+  display: flex;
+  navigator{
+    flex: 1;
+    padding: 20rpx;
+    image{
+      width: 100%;
+    }
+  }
+}
+.index_floor{
+  .floor_item{
+    
+    .floor_title{
+      image{
+        width: 100%;
+      }
+    }
+    .floor_inner{
+      padding: 5rpx;
+      overflow: hidden;
+      navigator{
+        padding: 5rpx;
+        float: left;
+        width: 33.33%;
+        &:nth-child(1){
+          height: 100vw * 232 / 386;
+        }
+        &:nth-child(n+2){
+          height: 100vw * 232 / 386 / 2;
+        }
+        image{
+          width: 100%;
+          height: 100%;
+        }
+      }
+    }
+
+  }
+}
+// 232 / 386  100vw/height

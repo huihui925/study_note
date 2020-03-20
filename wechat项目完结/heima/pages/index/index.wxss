@@ -1,0 +1,35 @@
+swiper {
+  height: auto;
+}
+.index_cate {
+  display: flex;
+}
+.index_cate navigator {
+  flex: 1;
+  padding: 20rpx;
+}
+.index_cate navigator image {
+  width: 100%;
+}
+.index_floor .floor_item .floor_title image {
+  width: 100%;
+}
+.index_floor .floor_item .floor_inner {
+  padding: 5rpx;
+  overflow: hidden;
+}
+.index_floor .floor_item .floor_inner navigator {
+  padding: 5rpx;
+  float: left;
+  width: 33.33%;
+}
+.index_floor .floor_item .floor_inner navigator:nth-child(1) {
+  height: 60.10362694vw;
+}
+.index_floor .floor_item .floor_inner navigator:nth-child(n+2) {
+  height: 30.05181347vw;
+}
+.index_floor .floor_item .floor_inner navigator image {
+  width: 100%;
+  height: 100%;
+}

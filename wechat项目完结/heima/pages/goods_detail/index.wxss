@@ -1,0 +1,92 @@
+page {
+  padding-bottom: 90rpx;
+}
+.detail swiper {
+  height: 65vw;
+  text-align: center;
+}
+.detail swiper swiper-item image {
+  width: 60%;
+}
+.detail .goods_price {
+  color: var(--themeColor);
+  font-size: 32rpx;
+  font-weight: bold;
+  padding: 15rpx;
+}
+.detail .goods_name_row {
+  display: flex;
+  border-top: 5rpx solid #dedede;
+  padding: 10rpx 0;
+}
+.detail .goods_name_row .title {
+  flex: 8;
+  padding: 0 10rpx;
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  font-size: 30rpx;
+}
+.detail .goods_name_row .collect {
+  flex: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-left: 1rpx solid #000;
+}
+.detail .goods_name_row .collect .icon-star__easyico {
+  color: var(--themeColor);
+}
+.detail .goods_name_row .collect text {
+  font-size: 40rpx;
+}
+.detail .info .info_title {
+  font-weight: bold;
+  padding: 20rpx;
+  color: var(--themeColor);
+  font-size: 32rpx;
+  border-bottom: 5rpx solid #dedede;
+  border-top: 5rpx solid #dedede;
+}
+.detail .btm_tool {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  height: 90rpx;
+  background-color: #fff;
+  display: flex;
+  width: 100%;
+  border-top: 3rpx solid #ccc;
+}
+.detail .btm_tool .tool_item {
+  flex: 1;
+  font-size: 24rpx;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  position: relative;
+}
+.detail .btm_tool .tool_item button {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+}
+.detail .btm_tool .carAdd,
+.detail .btm_tool .buy {
+  color: #fff;
+  flex: 2;
+  font-size: 30rpx;
+  font-weight: bold;
+}
+.detail .btm_tool .carAdd {
+  background-color: #ffa100;
+}
+.detail .btm_tool .buy {
+  background-color: var(--themeColor);
+}

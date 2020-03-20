@@ -1,0 +1,7 @@
+.swiper_container {
+  height: 340rpx;
+}
+.swiper_container image,
+.swiper_container navigator {
+  height: 100%;
+}

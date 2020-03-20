@@ -1,0 +1,125 @@
+page {
+  padding-bottom: 90rpx;
+}
+.address_group {
+  padding: 20rpx;
+}
+.address_group .chooseAddress button {
+  width: 50%;
+}
+.address_group .user_info_row .user_info {
+  display: flex;
+  justify-content: space-between;
+}
+.cart_title {
+  font-size: 36rpx;
+  color: var(--themeColor);
+  border-top: 1rpx solid currentColor;
+  border-bottom: 1rpx solid currentColor;
+  padding: 20rpx;
+}
+.cart_main .cart_item {
+  padding: 10rpx;
+  border-bottom: 1rpx solid #ccc;
+  display: flex;
+}
+.cart_main .cart_item .cart_chk_warp {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.cart_main .cart_item .cart_image_warp {
+  flex: 2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.cart_main .cart_item .cart_image_warp image {
+  width: 80%;
+}
+.cart_main .cart_item .cart_info_warp {
+  color: #666;
+  flex: 4;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
+.cart_main .cart_item .cart_info_warp .goods_name {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+.cart_main .cart_item .cart_info_warp .goods_price_row {
+  display: flex;
+  justify-content: space-between;
+}
+.cart_main .cart_item .cart_info_warp .goods_price_row .goods_price {
+  color: var(--themeColor);
+  font-size: 34rpx;
+}
+.cart_main .cart_item .cart_info_warp .goods_price_row .pricr_num_tool {
+  display: flex;
+  justify-content: space-between;
+}
+.cart_main .cart_item .cart_info_warp .goods_price_row .pricr_num_tool view {
+  width: 50rpx;
+  height: 50rpx;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.cart_main .cart_item .cart_info_warp .goods_price_row .pricr_num_tool .num_edit {
+  border: 1rpx solid #ccc;
+}
+.balance_group {
+  height: 90rpx;
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  background-color: #fff;
+  border-top: 1rpx solid #ccc;
+  display: flex;
+  width: 100%;
+}
+.balance_group .balance_checkAll {
+  padding: 10rpx;
+  flex: 3;
+  display: flex;
+  align-items: center;
+  font-size: 24rpx;
+}
+.balance_group .balance_checkAll checkbox-group {
+  color: #666;
+}
+.balance_group .balance_wrap {
+  flex: 5;
+  display: flex;
+}
+.balance_group .balance_wrap .total_row {
+  flex: 3;
+  padding-right: 10rpx;
+}
+.balance_group .balance_wrap .total_row .total {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+.balance_group .balance_wrap .total_row .total .price {
+  color: var(--themeColor);
+  font-size: 34rpx;
+}
+.balance_group .balance_wrap .total_row .freight {
+  font-size: 24rpx;
+  text-align: right;
+}
+.balance_group .balance_wrap .balance_btn {
+  flex: 2;
+  background-color: var(--themeColor);
+  color: #fff;
+  font-size: 34rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

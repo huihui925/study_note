@@ -1,0 +1,5 @@
+<view class="UpImg_warp">
+  <image  src="{{imgsrc}}"></image>
+  <icon class="" type="clear" size="23" color="red" bindtap="handleClearImg">
+  </icon>
+</view>
