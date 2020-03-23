@@ -1,9 +1,9 @@
 <view class="userInfo_warp">
   <view class="userInfo_image_warp" wx:if="{{userInfoFlag}}">
-    <image class="" src="https://wx.qlogo.cn/mmopen/vi_32/pe85EKTajkgPAQ6ewuEFudmNd4sMpNvjG76s5X3eeMnuD3I872h3hr0T82IKotoMM8oSmFgW6waHJGVgIJU7Xg/132"></image>
+    <image class="" src="{{userInfo.avatarUrl}}"></image>
     <view class="userInfo">
-      <image class="" src="https://wx.qlogo.cn/mmopen/vi_32/pe85EKTajkgPAQ6ewuEFudmNd4sMpNvjG76s5X3eeMnuD3I872h3hr0T82IKotoMM8oSmFgW6waHJGVgIJU7Xg/132"></image>
-      <view class="userName">晓晓</view>
+      <image class="" src="{{userInfo.avatarUrl}}"></image>
+      <view class="userName">{{userInfo.nickName}}</view>
     </view>
   </view>
   <view wx:else class="userInfo_login_btn">

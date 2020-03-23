@@ -1,5 +1,5 @@
 import { request } from '../../request/index.js'
-import {showToast} from '../../utils/asyncWx'
+import {showToast,navigateTo, showModal} from '../../utils/asyncWx'
 Page({
   data: {
     goodsObj:{},
@@ -32,7 +32,15 @@ Page({
       }
     })
   },
-  handleCollectChange(){
+  async handleCollectChange(){
+    const userInfo = wx.getStorageSync("userInfo")||{};
+    if(!userInfo.nickName){
+     const res = await showModal({content:"您还未进行登录,是否先登录账号?"})
+      if(res){
+        navigateTo({url:"../login/index"})
+      }
+      return
+    }
     const collectList = wx.getStorageSync("collectList") || [];
     const index = collectList.findIndex(v=>v.goods_id==this.fullGoodsObj.goods_id)
     if(index == -1){
@@ -54,7 +62,15 @@ Page({
       urls 
     })
   },
-  handleCarAdd(){
+  async handleCarAdd(){
+    const userInfo = wx.getStorageSync("userInfo")||{};
+    if(!userInfo.nickName){
+     const res = await showModal({content:"您还未进行登录,是否先登录账号?"})
+      if(res){
+        navigateTo({url:"../login/index"})
+      }
+      return
+    }
     //取本地存储数据购物车 数组,若无值会返回空字符串,布尔值表false,这里进行处理返回[] 避免数组循环报错
     const car = wx.getStorageSync("car") || [];
     //当前商品信息

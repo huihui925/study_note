@@ -355,84 +355,6 @@ show create table tableName;
 
 ![image-20200304160505051](MySQL笔记哔哩哔哩.assets/image-20200304160505051.png)
 
-## 数据库的三大设计范式
-
-### 1NF 第一范式 （拆字段值）
-
-+ 只要字段的值还可以继续拆分，就不满足第一范式。
-     - （例'中国成都市武侯区'有很多个类似数据时字段值可以从一个‘地址’字段拆分为‘国家’、‘城市’、’区县‘三个字段，单需要对单独某个字段进行操作时会比较方便）
-+ 范式设计得越详细，对某些实际操作可能会更好，但并非都有好处（因若要用完整地址还需拼接），需要对项目的实际情况进行设定（若从来不会对地址某个小字段操作，就不需要此范式，我们需要知道这个）。
-
-### 2NF 第二范式 （拆表）
-
-在满足第一范式的前提下，其他列都必须完全依赖于主键列。如果出现不完全依赖，只可能发生在联合主键的情况下：
-
-```mysql
--- 订单表
-CREATE TABLE myorder (
-    product_id INT,
-    customer_id INT,
-    product_name VARCHAR(20),
-    customer_name VARCHAR(20),
-    PRIMARY KEY (product_id, customer_id)
-);
-```
-
-实际上，在这张订单表中，`product_id, customer_id`两者构成了主键，`product_name` 只依赖于 `product_id` ，`customer_name` 只依赖于 `customer_id` 。也就是说，`product_name` 和 `customer_name` 只依赖部分主键，不是完全依赖。
-
-这就不满足第二范式：其他列都必须完全依赖于主键列！
-
-```mysql
-CREATE TABLE myorder (
-    order_id INT PRIMARY KEY,
-    product_id INT,
-    customer_id INT
-);
-
-CREATE TABLE product (
-    id INT PRIMARY KEY,
-    name VARCHAR(20)
-);
-
-CREATE TABLE customer (
-    id INT PRIMARY KEY,
-    name VARCHAR(20)
-);
-```
-
-拆分之后，`myorder` 表中的 `product_id` 和 `customer_id` 完全依赖于 `order_id` 主键，而 `product` 和 `customer` 表中的·`name`完全依赖于各自的主键，这就满足第二范式。
-
-### 3NF 第三范式
-
-在满足第二范式的前提下，除了主键列之外，其他列之间不能有传递依赖关系(不能通过其他表找到)。
-
-```mysql
-CREATE TABLE myorder (
-    order_id INT PRIMARY KEY,
-    product_id INT,
-    customer_id INT,
-    customer_phone VARCHAR(15)
-);
-```
-
-表中的 `customer_phone` 有可能依赖于 `order_id` 、 `customer_id` 两列（通过这里面也就是其他地方找到`phone`），也就不满足了第三范式的设计：其他列之间不能有传递依赖关系。
-
-```mysql
-CREATE TABLE myorder (
-    order_id INT PRIMARY KEY,
-    product_id INT,
-    customer_id INT
-);
-
-CREATE TABLE customer (
-    id INT PRIMARY KEY,
-    name VARCHAR(20),
-    phone VARCHAR(15)
-);
-```
-
-修改后就不存在其他列之间的传递依赖关系，其他列都只依赖于主键列，满足了第三范式的设计！
-
 ## 查询练习
 
 ### 准备数据
@@ -2674,3 +2596,111 @@ mysql -uroot -p123456 studb1 <  C:\Users\35614\Desktop\studb.sql
 -- 语法： source 备份的脚本全路径        -- 注意 这句末尾不能加分号 路径不能加引号
 source C:\Users\35614\Desktop\studb.sql    
 ```
+
+## 数据库设计
+
+### 数据库设计步骤:
+
+![image-20200322135158671](MySQL笔记哔哩哔哩.assets/image-20200322135158671.png)
+
+![image-20200322135324691](MySQL笔记哔哩哔哩.assets/image-20200322135324691.png)
+
+![image-20200322135947290](MySQL笔记哔哩哔哩.assets/image-20200322135947290.png)
+
+### E-R的绘制
+
+![image-20200322141911370](MySQL笔记哔哩哔哩.assets/image-20200322141911370.png)
+
+![image-20200322142154260](MySQL笔记哔哩哔哩.assets/image-20200322142154260.png)
+
+![image-20200322142008186](MySQL笔记哔哩哔哩.assets/image-20200322142008186.png)
+
+## 数据库的三大设计范式
+
+### 1NF 第一范式 （拆字段值）
+
++ 只要字段的值还可以继续拆分，就不满足第一范式。
+     - （例'中国成都市武侯区'有很多个类似数据时字段值可以从一个‘地址’字段拆分为‘国家’、‘城市’、’区县‘三个字段，当需要对单独某个字段进行操作时会比较方便）
++ 范式设计得越详细，对某些实际操作可能会更好，但并非都有好处（因若要用完整地址还需拼接），需要对项目的实际情况进行设定（若从来不会对地址某个小字段操作，就不需要此范式，我们需要知道这个）。
+
+### 2NF 第二范式 （拆表）
+
+在满足第一范式的前提下，其他列都必须完全依赖于主键列。如果出现不完全依赖，只可能发生在联合主键的情况下：
+
+```mysql
+-- 订单表
+CREATE TABLE myorder (
+    product_id INT,
+    customer_id INT,3
+    product_name VARCHAR(20),
+    customer_name VARCHAR(20),
+    PRIMARY KEY (product_id, customer_id)
+);
+```
+
+实际上，在这张订单表中，`product_id, customer_id`两者构成了主键，`product_name` 只依赖于 `product_id` ，`customer_name` 只依赖于 `customer_id` 。也就是说，`product_name` 和 `customer_name` 只依赖部分主键，不是完全依赖。
+
+这就不满足第二范式：其他列都必须完全依赖于主键列！
+
+```mysql
+CREATE TABLE myorder (
+    order_id INT PRIMARY KEY,
+    product_id INT,
+    customer_id INT
+);
+
+CREATE TABLE product (
+    id INT PRIMARY KEY,
+    name VARCHAR(20)
+);
+
+CREATE TABLE customer (
+    id INT PRIMARY KEY,
+    name VARCHAR(20)
+);
+```
+
+拆分之后，`myorder` 表中的 `product_id` 和 `customer_id` 完全依赖于 `order_id` 主键，而 `product` 和 `customer` 表中的·`name`完全依赖于各自的主键，这就满足第二范式。
+
+### 3NF 第三范式
+
+在满足第二范式的前提下，除了主键列之外，其他列之间不能有传递依赖关系(不能通过其他表找到)。
+
+```mysql
+CREATE TABLE myorder (
+    order_id INT PRIMARY KEY,
+    product_id INT,
+    customer_id INT,
+    customer_phone VARCHAR(15)
+);
+```
+
+表中的 `customer_phone` 有可能依赖于 `order_id` 、 `customer_id` 两列（通过这里面也就是其他地方找到`phone`），也就不满足了第三范式的设计：其他列之间不能有传递依赖关系。
+
+```mysql
+CREATE TABLE myorder (
+    order_id INT PRIMARY KEY,
+    product_id INT,
+    customer_id INT
+);
+
+CREATE TABLE customer (
+    id INT PRIMARY KEY,
+    name VARCHAR(20),
+    phone VARCHAR(15)
+);
+```
+
+修改后就不存在其他列之间的传递依赖关系，其他列都只依赖于主键列，满足了第三范式的设计！
+
+
+
+### 学校视频的笔记如下： 
+
+![image-20200322180800079](MySQL笔记哔哩哔哩.assets/image-20200322180800079.png)
+
+![image-20200322191725614](MySQL笔记哔哩哔哩.assets/image-20200322191725614.png)
+
+![image-20200322195500545](MySQL笔记哔哩哔哩.assets/image-20200322195500545.png)
+
+![image-20200322195519694](MySQL笔记哔哩哔哩.assets/image-20200322195519694.png)
