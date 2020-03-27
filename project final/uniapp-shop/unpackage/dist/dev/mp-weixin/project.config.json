@@ -1,0 +1,52 @@
+{
+	"description": "项目配置文件。",
+	"packOptions": {
+		"ignore": []
+	},
+	"setting": {
+		"urlCheck": false,
+		"es6": true,
+		"postcss": true,
+		"minified": true
+	},
+	"compileType": "miniprogram",
+	"libVersion": "2.9.2",
+	"appid": "wxd75b4a5a6d280890",
+	"projectname": "uniapp-shop",
+	"simulatorType": "wechat",
+	"simulatorPluginLibVersion": {},
+	"condition": {
+		"search": {
+			"current": -1,
+			"list": []
+		},
+		"conversation": {
+			"current": -1,
+			"list": []
+		},
+		"game": {
+			"current": -1,
+			"list": []
+		},
+		"miniprogram": {
+			"current": 0,
+			"list": [
+				{
+					"name": "资讯页面",
+					"id": 0,
+					"pathName": "pages/news/news"
+				},
+				{
+					"name": "联系我们",
+					"id": 1,
+					"pathName": "pages/contact/contact"
+				},
+				{
+					"name": "社区图片",
+					"id": 2,
+					"pathName": "pages/pics/pics"
+				}
+			]
+		}
+	}
+}

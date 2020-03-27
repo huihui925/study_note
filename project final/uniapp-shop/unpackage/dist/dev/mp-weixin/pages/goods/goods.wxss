@@ -1,0 +1,10 @@
+
+page{
+	background-color: #eee;
+}
+.over{
+	text-align: center;
+	line-height: 50rpx;
+	font-size: 28rpx;
+}
+

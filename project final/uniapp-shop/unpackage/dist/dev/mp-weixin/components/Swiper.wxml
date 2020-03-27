@@ -1,0 +1,1 @@
+<view class="swiper_container"><swiper style="{{('height:'+styleHeight)}}" indicator-dots autoplay circular><block wx:for="{{swipers}}" wx:for-item="item" wx:for-index="__i0__"><swiper-item><navigator url><image src="{{item.img}}" mode="widthFix"></image></navigator></swiper-item></block></swiper></view>

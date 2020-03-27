@@ -108,7 +108,7 @@ width:30%
 }
 ```
 
-# [filter](https://www.runoob.com/cssref/css3-pr-filter.html)图像模糊
+## [filter](https://www.runoob.com/cssref/css3-pr-filter.html)图像模糊
 
 filter(滤镜) 属性,更多效果看本地
 
@@ -120,3 +120,14 @@ img {
 }
 ```
 
+## 子元素设置margin后父元素需overflow:hidden
+
+案例:当父元素,子元素,分别都有不同背景色时,子元素设置margin依旧看不到父元素的背景,
+
+原因:[解决子元素设置margin，效果到父元素上的问题](https://www.cnblogs.com/yangwenbo/p/10718832.html), 原因就是margin重合 塌陷问题
+
+解决办法
+
+　　1为父元素设置内边距padding。来代替给子元素设置margin-top 
+　　2为父元素设置边框border。 
+　　3为父元素设置 `overflow: hidden` 。
