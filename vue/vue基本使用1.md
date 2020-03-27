@@ -1,5 +1,3 @@
-
-
 # 实战经验
 
 #### 1. 组件中操作DOM针对整个界面
@@ -11,6 +9,8 @@
 #### 2. 异步请求并不妨碍组件解析
 
 #### 3. ajax获取的数据通过跨组件传值 需用watch监听 使用,否则拿到的会出问题
+
+#### 4.vue方法的典型特征：实例方法首字符$
 
 # vue中基本结构
 
@@ -88,6 +88,20 @@ data: {
 },
 ```
 
+## v-pre  
+
+显示原始信息跳过编译过程 , 不对标签内容进行编译
+
+```html
+//正常情况会将这个当插值表达式进行编译
+<div>{{msg}}</div>
+
+//若只想展示{{msg}}字符串, 使用v-pre不对其编译, 写的什么就展示什么
+<div v-pre>{{msg}}</div>
+```
+
+
+
 # v-bind缩写( : )
 
 > 绑定后,里面写的就是变量
@@ -126,9 +140,12 @@ data: {
 
 
 
-若不传参,方法形参第一个接收参数是e, 若传了 第一个参数则是传的参数, 若又想要参数又想要事件源对象则:
+若不传参,方法形参默认第一个接收参数是e, 若传了 第一个参数则是传的参数, 若又想要参数又想要事件源对象则
+
+事件对象必须作最后参数显示传递,且$event名字固定:
 
 ```html
+//也可传多参,show(123,456,$event)
 <button @click='show(123,$event)'>按钮</button>
 
 methods: {
@@ -167,6 +184,17 @@ methods: {
 data: {
    list:[1,2,3]
 },
+```
+
+**v-if 和 v-for 可以搭配使用 ,当循环时 ,只渲染符合条件的那一项**
+
+```js
+<div v-if="item==3" v-for="item in arr" :key="item">{{item}}</div>
+//最后渲染出的结果是  <div>3</div>
+
+data:{
+ 	arr:[1,3,6]
+}
 ```
 
 # v-if 
@@ -300,7 +328,7 @@ data: {
 
 ```javascript
 <div id="app">
-     {{msg | guolv(123)}}
+     {{msg | guolv(123)}}  //若传多个参继续写{{msg | guolv(123,456)}}
 </div>
 
 Vue.filter('guolv',function(data,a){
@@ -354,13 +382,64 @@ console.log(str1.padStart(2,0)) //09 补0了
 
 # 按键修饰符
 
-> 在事件后用按键修饰符 例.enter 或者.f2 都代表此事件后点击对应按键 才触发
+> 在事件后用按键修饰符 , 用来过滤, 当按键按到指定的键才触发
 >
-> 例: 这里keyup事件不会直接触发,而是点击键盘的enter键后再触发,这就是按键修饰符作用,键盘的大部分键都可直接用
+> 例: @keyup.enter表明只有在 `key` 是 `Enter` 时才调用`show`方法, 
+>
+> 用法和事件修饰符类似, 在事件后直接点
 
 ```
 <input type="text" @keyup.enter='show' v-model='msg'>
 ```
+
+**常见按键修饰符有哪些  :**
+
+```
+.enter =>  enter键
+
+.tab => tab键
+
+.delete (捕获“删除”和“退格”按键) => 删除键
+
+.esc => 取消键
+
+.space => 空格键
+
+.up => 上
+
+.down => 下
+
+.left => 左
+
+.right => 右
+```
+
+# 自定义按键修饰符
+
+> 可以直接使用`@keyup.112='show'`,自定义按键修饰符就是为code起别名, 实际也会转换成code值, 但是使用别名更直观, 且数字不容易记住. 
+>
+> 有一些按键 (`.esc` 以及所有的方向键) 在 IE9 中有不同的 `key` 值, 如果你想支持 IE9，vue内置的别名应该是首选。特殊情况用自定义的,下面是方法:
+
+可以通过全局 `config.keyCodes` 对象[自定义按键修饰符别名](https://cn.vuejs.org/v2/api/#keyCodes)：
+
+```js
+// 可以使用 `v-on:keyup.f1`
+// f1名字自定义,112必须对应键盘的keycode值
+Vue.config.keyCodes.f1 = 112
+```
+
+扩展: 查看按键code值
+
+```js
+//查看按键对应code值 通过e.keyCode获取
+<input type="text" @keyup="handle">
+  
+ handle(e){
+  console.log(e.keyCode)
+}
+```
+
+
 
 # 自定义全局指令
 
@@ -401,6 +480,7 @@ Vue.directive('focus', {
 案例2: 可传参,通过第二个参数身上的value属性 获取传递的red值
 
 ```javascript
+//自定义指令携带参数  通过v-指令名= “参数”
 <input type="text" v-color="'red'">
 
 bind(el,binding){
@@ -473,9 +553,9 @@ this.$http.jsonp(url地址).then(res=>{
 # axios
 
 > axios也是发ajax请求的 里面只有ajax功能
->  有get post 没有jsonp
->  jsonp用得少 后续有其他代替
->  数据必须点data获取
+> 有get post 没有jsonp
+> jsonp用得少 后续有其他代替
+> 数据必须点data获取
 >
 > axios不是vue官方提供的 所以不能通过Vue.use(‘axios’)安装 如果想挂在Vue上 让任何组件都能直接调用 就把它挂在prototype上
 
@@ -539,9 +619,9 @@ Vue.prototype.axios = axios;
 >
 > 2. 在transition上设置,
 >
->    enter-active-class设置入场样式 leave-active-class设置出场样式,其中animated是固定必须写,后面的tada则是对应样式效果,
->    :duration设置样式时间默认毫秒,写4000表同时设置入场和出场时间,也可:duration={enter:2000,leave:3000}
->    ==注意:== duration设置时间有限制 只能设置动画默认时间之内的时间 大于默认时间的无效果
+>      enter-active-class设置入场样式 leave-active-class设置出场样式,其中animated是固定必须写,后面的tada则是对应样式效果,
+>      :duration设置样式时间默认毫秒,写4000表同时设置入场和出场时间,也可:duration={enter:2000,leave:3000}
+>      ==注意:== duration设置时间有限制 只能设置动画默认时间之内的时间 大于默认时间的无效果
 
 ```javascript
 <link rel="stylesheet" href="./animate.css">
@@ -639,9 +719,9 @@ vue把完整的一场动画 用钩子函数分为:  上半场动画 + 下半场�
 
 3. `transition-group`会渲染为`span`标签,可以用tag将其渲染为其他标签.
 
-   注意: 只有`transition-group`会渲染成`span`标签,而`transition`不会渲染为其他任何标签.
+     注意: 只有`transition-group`会渲染成`span`标签,而`transition`不会渲染为其他任何标签.
 
-   ​			==appear对`transition`也有效,tag对其无效==
+     ​			==appear对`transition`也有效,tag对其无效==
 
 ## .v-move
 
@@ -665,53 +745,53 @@ vue把完整的一场动画 用钩子函数分为:  上半场动画 + 下半场�
 ## 创建全局组件的三种方式（推荐第三种）
 
 1. ```javascript
-   <div id="app">
-      <myh1></myh1>
-   </div>
-   <script>
-   //创建模板对象
-     const a = Vue.extend({
-       template:"<h1>我是一个大大的h1</h1>"
-     })
-   //注册组件 前为组件名，后为模板对象
-     Vue.component('myh1', a)
-   </script>
-   ```
+     <div id="app">
+        <myh1></myh1>
+     </div>
+     <script>
+     //创建模板对象
+       const a = Vue.extend({
+         template:"<h1>我是一个大大的h1</h1>"
+       })
+     //注册组件 前为组件名，后为模板对象
+       Vue.component('myh1', a)
+     </script>
+     ```
 
 2. ```javascript
-   <div id="app">
-       <myh1></myh1>
-   </div>
-   
-   //模板对象可以直接写为字面量对象
-   Vue.component('myh1', {
-      template:"<h1>我是一个大大的h1-----------</h1>"
-   })
-   ```
+     <div id="app">
+         <myh1></myh1>
+     </div>
+     
+     //模板对象可以直接写为字面量对象
+     Vue.component('myh1', {
+        template:"<h1>我是一个大大的h1-----------</h1>"
+     })
+     ```
 
 3. ```javascript
-   /*
-   1.将template模板抽离出来 放在template元素中,用的时候写对应选择器.
-   2.template元素要写在被实例对象控制的区域的外部.不写内部.
-   3.template里面的东西都属于模板内容(不含template元素),注意这是模板所以也只有有一个根元素
-   */
-   <div id="app">
-     <myh1></myh1>
-   </div>
-    
-   <template id="one">
-     <div>
-       <h1>哈哈</h1>
+     /*
+     1.将template模板抽离出来 放在template元素中,用的时候写对应选择器.
+     2.template元素要写在被实例对象控制的区域的外部.不写内部.
+     3.template里面的东西都属于模板内容(不含template元素),注意这是模板所以也只有有一个根元素
+     */
+     <div id="app">
+       <myh1></myh1>
      </div>
-   </template>
-    
-   <script>
-     //在el控制区域外的template标签内写模板内容，注册组件时写对应的id名
-     Vue.component('myh1', {
-       template: "#one"
-     })
-   </script>
-   ```
+      
+     <template id="one">
+       <div>
+         <h1>哈哈</h1>
+       </div>
+     </template>
+      
+     <script>
+       //在el控制区域外的template标签内写模板内容，注册组件时写对应的id名
+       Vue.component('myh1', {
+         template: "#one"
+       })
+     </script>
+     ```
 
 **推荐方式三，优点不用写字符串内，有代码提示和高亮。**
 
@@ -875,16 +955,11 @@ Vue.component('login', {
 **从前笔记补充**：
 
 ```
-1.	子组件可以直接使用自己身上data的数据 但是子组件默认不可直接使用父组件中的数据和方法
-2.	子组件想使用父组件中数据需进行以下操作:
-		a).在组件标签上 通过属性绑定: 把数据传给子组件内部 属性名自定
-		b).传递之后,子组件上有props属性和子组件中的data同级,是一数组,在数组中定义此属性名(属性名是字符串需引号)
-		c).可以直接使用的
-注意:
-		a).在实例中 属性名带s的都是{ },只有props例外,是一个[ ],props是property财产的缩写
-		b).子组件自己身上的data数据可直接调用 可读可写
-		c).父组件的数据子组件不可直接调用 只读不可写
-		e).data和props中不能同名  数据再模板对象中可以直接用 在方法中要this点
+		a).绑定的属性名自定义
+		b).props是数组,内值为属性名是字符串需引号
+		c).props接收的数据 只读不可写
+		d).data和props中不能同名  
+		e).使用:在插值语法中直接写自定义的属性名, 在方法中要this.自定义的属性名
 ```
 
 ### props的另一形式
@@ -993,7 +1068,6 @@ slot 分为: 匿名插槽 和 实名插槽
 ## 什么是路由(仅了解)
 
 ```
-
 1.后端路由:	对于网站来说,网站前端里面所能看到的任何资源,都要通过url地址从后端服务器拿,后端服务器每次都能监听到请求的url地址,根据对应的url地址返回对应的资源,这个处理过程是通过路由进行分发,后端路由就是把一个url地址对应到服务器对应的资源,这个对应关系叫路由.
 
 2.前端路由:	前端路由是只在前端页面进行跳转,不会发请求给后端获取页面,只涉及前端页面的跳转.前端路由是通过hash来实现不同页面跳转,url中#号后面的都是hash.hash的特点是http请求中不会包含hash相关的内容,所以单页面程序的跳转就是通过hash来实现的.类似锚点就是hash
@@ -1214,13 +1288,14 @@ routes: [
 
 # watch监听
 
-> 绑定的属性为data中的数据或路由.不写this,写了this会出错,若数据更改则触发对应函数,不会初始化,不更改就不会执行,
+> 绑定的属性为data中的数据或路由.不写this,写了this会出错,若数据更改则触发对应函数,不会初始化,不更改就不会执行
 >
-> 主要是监听路由的改变
 
 1. 监听`data`数据改变,属性省略`this`
 
      函数有两参,一参 newVal 是最新的数据 , 二参oldVal 是旧的数据即更新前一次的数据
+     
+     **应用场景: **若父组件传值为子组件,传的值是发异步请求获取的,那么可能导致子组件拿的值是undefined,此时数据还没获取回来,所以子组件通常不会直接使用父组件传的异步数据,而是监听,再将值存data中,使用的data中的值.
 
 ```javascript
 <input type="text" v-model='msg'>
@@ -1257,7 +1332,7 @@ watch: {
 
 # computed计算属性
 
-> 1. ==计算属性是自定义属性名然后直接使用,不需在data中定义==,值为`function`,函数内需`return`,使用时直接当属性使用,不能当函数调用
+> 1. ==计算属性是自定义属性名然后直接使用,不需在data中定义==,值为`function`,函数内需`return`,使用时直接当属性使用,不能当函数调用, 在插值语法中 直接写 自定义的属性名,在方法中 直接this.自定义的属性名
 > 2. 函数内相关联的data数据若发生改变则会触发函数进行计算
 > 3. 计算属性有缓存,若未改变,则直接使用上次的计算结果不会重新计算,利于性能
 > 4. 计算属性有初始化,即第一次进入网页会默认计算一次
@@ -1315,3 +1390,173 @@ https://www.jianshu.com/p/7d2dbfdd1b0f
 # js 里面的键盘事件对应的键码
 
 http://www.cnblogs.com/wuhua1/p/6686237.html
+
+
+
+# 2019新视频补充
+
+# v-once 
+
+> 作用: 执行一次性的插值【只编译一次, 当数据改变时，插值处的内容不会继续更新, 依旧是第一次的值】
+>
+> 场景: vue数据绑定是响应式的, 对于绑定的数据需监听变化, 此举消耗性能, 若数据后续不会再修改可用`v-once`让vue不进行监听,从而提高性能.
+
+```html
+<div v-once>{{info}}</div>
+```
+
+
+
+# 表单基本操作
+
+#### **单选框如何实现单选**
+
+​		1、 两个单选框需要同时通过v-model 双向绑定 一个值 
+
+​		2、 每一个单选框必须要有value属性 且value 值不能一样
+
+​		3、 当某一个单选框选中的时候 v-model 会将当前的 value值 改变 data 中的 数据
+
+```html
+<label> 男: 
+  <input type="radio" value="1" v-model="dan">
+</label>
+<label> 女: 
+  <input type="radio" value="2" v-model="dan">
+</label>
+
+data: {
+  dan: 2
+}
+```
+
+#### **复选框如何实现复选**
+
+​		1、 复选框需要同时通过v-model 双向绑定 一个值 ,复选框可以选多个所以值是数组
+
+​		2、 每一个复选框必须要有value属性 且value 值不能一样 
+
+​		3、 当某一个复选框选中的时候 v-model 会将当前的 value值 改变 data 中的 数据
+
+```html
+<label> 男: 
+  <input type="checkbox" value="1" v-model="dan">
+</label>
+<label> 女: 
+  <input type="checkbox" value="2" v-model="dan">
+</label>
+
+data: {
+  dan: [1,2] //因是多选所以必须是数组,若为单独数字,会出错
+},
+```
+
+#### **如何实现获取下拉框的选中状态**
+
+​		1、 需要给select 通过v-model 双向绑定 一个值 
+
+​		2、 每一个option 必须要有value属性 且value 值不能一样 
+
+​		3、 当某一个option选中的时候 v-model 会将当前的 value值 改变 data 中的 数据
+
+```html
+<select v-model="dan">
+  <option value="1">篮球</option>
+  <option value="2">足球</option>
+</select>
+
+data: {
+  dan: 3
+}
+```
+
+#### 如何获取文本域中的值
+
+​		1、 通过v-model 绑定一个值
+
+# **表单域修饰符**
+
+> .number 、 .trim 、 .lazy
+
+**使用方法:**  对`v-model`值的处理, 类似事件修饰符, 不同的是这个在`v-model`后点
+
+## **.number 转换为数值** 
+
+> 用户input输入的值默认是字符串, 将其值转换为数字, 便于计算, 无需再拿值进行`parseInt`可直接计算.
+
+```html
+<input type="text" v-model.number="msg" >
+{{msg + 123}} //设置.number后,可直接计算
+
+data: {
+		msg:''
+}
+```
+
+**注意点：**当开始输入非数字的字符串时，因为Vue无法将字符串转换成数值 ,所以属性值将实时更新成相同的字符串,即使后面输入数字，也将被视作字符串,例'哈哈123'--->转为''哈哈123'',   若先数字后字符串则转换数字省略字符串,例'123哈哈'-->转为123。
+
+## **.trim** 
+
+> 去掉用户开头和结尾的空格 ,不能去除中间的空格
+
+```html
+<input type="text" v-model.trim="msg" >
+
+data: {
+    msg:''
+},
+```
+
+## **.lazy** 
+
+1. 作用
+
+     将input事件切换成change事件  .lazy 修饰符延迟了同步更新属性值的时机。
+
+​	2. 区别
+
+​		input事件: 默认事件, 值改变, 立即触发.
+
+​		change事件: 值改变, 失去焦点才触发.
+
+ 3. 应用场景
+
+     通常用于用户注册账号, 设置用户名后, 当失去焦点再对用户名值进行验证, 验证是否已有该名
+
+```html
+<input type="text" v-model.lazy="msg" >
+
+data: {
+   msg:''
+}
+```
+
+# 数组更新检测
+
+## 编译方法和替换数组
+
+> vue对数据处理一般都是响应式的（数据和视图同步）, 而数组操作默认不是响应式的, 所以vue对数组做了专门处理使其变成响应式.
+
+改变原数组的API叫变异方法, vue将其处理成响应式方式。不会改变原数组的API需要对原数组重新赋值使原数组值变化，从而达到响应式效果，所以这种API叫替换数组。这里就是理论知识，知道有这东西就行。
+
+![image-20200328003058744](vue基本使用1.assets/image-20200328003058744.png)
+
+## Vue.set或this.$set  处理数组或对象
+
+> 通过索引直接改变数组的某一项，并不是响应式的(数据改变视图不会重新更新)，例：this.arr[0]=1，所以这里可以用到`arr.splice截取又插入`或者`Vue.set或this.$set`
+
+下图的vm就是this实例，在组件内直接this.$set。
+
+参数一：准确来说是原数组，非单纯字符串名，例应该是`this.arr`而非`'arr'`
+
+参数二：要修改的下标索引（若处理的对象，则将索引改为属性名）
+
+参数三：新的值，更新后的值
+
+**修改对象：通过key键直接改变对象的某一项也不是响应式的，和数组类似。这里也可用set方法，把参数二的下标索引改为key键名（单纯键的名字string），其他参数不变**
+
+![image-20200328010232881](vue基本使用1.assets/image-20200328010232881.png)
+
+![image-20200328005537637](vue基本使用1.assets/image-20200328005537637.png)
+
+![image-20200328005910079](vue基本使用1.assets/image-20200328005910079.png)
