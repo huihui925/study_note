@@ -46,11 +46,11 @@
         "selectedIconPath": "icons/my-o.png"
       }
     ],
-        "color": "#999",
-        "selectedColor": "#ff4246",
-        "backgroundColor": "",
-        "position": "bottom",
-        "borderStyle": "black"
+    "color": "#999",
+    "selectedColor": "#ff4246",
+    "backgroundColor": "",
+    "position": "bottom",
+    "borderStyle": "black"
   },
   "style": "v2",
   "sitemapLocation": "sitemap.json"

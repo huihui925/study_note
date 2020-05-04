@@ -42,6 +42,8 @@ Page({
       //成功的回调
       success: (res) => {
         // tempFilePath可以作为img标签的src属性显示图片
+        console.log(res);
+        
         const tempFilePaths = res.tempFilePaths
         this.setData({
           chooseImages: this.data.chooseImages.concat(tempFilePaths)
