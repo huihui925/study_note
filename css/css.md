@@ -131,3 +131,72 @@ img {
 　　1为父元素设置内边距padding。来代替给子元素设置margin-top 
 　　2为父元素设置边框border。 
 　　3为父元素设置 `overflow: hidden` 。
+
+## 字体外边框
+
+```css
+-webkit-text-stroke: 1px #F44336;
+```
+
+![image-20200412092657326](css.assets/image-20200412092657326.png)
+
+## 元素平面一直旋转
+
+```css
+div {
+ animation: comphchanbgxz 2s linear infinite;
+}
+```
+
+## 给滚动条设置样式
+
+> .ranklistBox::-webkit-scrollbar-thumb
+>
+> .ranklistBox::-webkit-scrollbar-track
+
+```css
+.ranklistBox::-webkit-scrollbar-thumb {
+   border-radius:5px;
+   box-shadow   : inset 0 0 1px #A7834D;
+   background: #FBDC3B;
+   background: -webkit-linear-gradient(top, #FBDC3B, #FFC710);
+   background: -o-linear-gradient(top, #FBDC3B, #FFC710);
+   background: -moz-linear-gradient(top, #FBDC3B, #FFC710);
+   background: linear-gradient(top, #FBDC3B, #FFC710);
+}
+.ranklistBox::-webkit-scrollbar-track {
+   /*滚动条里面轨道*/
+   /*box-shadow   : inset 0 0 5px rgba(0, 0, 0, 0.2);*/
+   border-radius:5px;
+   background: #CBA164;
+}
+```
+
+### 滚动条宽高
+
+```css
+.ranklistBox::-webkit-scrollbar {
+ width: 5px;
+ height: 1px;
+}
+```
+
+## 自定义input光标颜色和文字颜色
+
+```css
+综合上面两种方法，可以得到最佳实践如下：
+
+如果浏览器支持caret-color属性，优先使用caret-color（Chrome/Firefox/Opera）；其次使用::first-line方法（Safari）；最后忽略（如IE）。
+
+整合后CSS如下：
+
+input {
+    color: #333;
+    caret-color: red;
+}
+@supports (-webkit-mask: none) and (not (cater-color: red)) {
+    input { color: red; }
+    input::first-line { color: #333; }
+}
+```
+

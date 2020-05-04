@@ -215,3 +215,124 @@ this.$store.getters.名字
 
 
 
+# 查看隐藏的配置文件
+
+## [使用 vue-cli-service inspect 来查看一个 Vue CLI 3 项目的 webpack 配置信息（包括：development、production）](https://www.cnblogs.com/cag2050/p/10523096.html)
+
+### 使用 `vue-cli-service inspect` 来查看一个 Vue CLI 3 项目的 webpack 配置信息（包括：development、production）
+
+1. --mode 指定环境模式 (默认值：development)
+2. 运行命令，在终端输出：
+     开发环境：`npx vue-cli-service inspect --mode development`
+     生产环境：`npx vue-cli-service inspect --mode production`
+3. 运行命令，将输出导入到 js 文件：
+     开发环境：`npx vue-cli-service inspect --mode development >> webpack.config.development.js`
+     生产环境：`npx vue-cli-service inspect --mode production >> webpack.config.production.js`
+4. 在产生的 js 文件开头，添加：`module.exports =`，然后格式化即可查看。
+5. 官方网址：https://cli.vuejs.org/zh/guide/cli-service.html#vue-cli-service-inspect
+
+# [Vue-Cli4.x配置文件路径别名](https://www.cnblogs.com/zwnsyw/p/12316622.html)
+
+提示：和package.json同级新建vue.config.js文件(可选文件，默认没有创建)。在vue.confg.js中添加如下代码
+
+```js
+
+const path = require('path');//引入path模块
+
+function resolve(dir){
+    return path.join(__dirname,dir)//path.join(__dirname)设置绝对路径
+}
+module.exports={
+    chainWebpack:(config)=>{
+        config.resolve.alias
+        .set('@', resolve('src'))
+				.set('@components', resolve('src/components'))
+				.set('@static', resolve('src/static'))
+        .set('@views',resolve('src/views'))
+        .set('@assets',resolve('src/assets'))
+        //set第一个参数：设置的别名，第二个参数：设置的路径
+    }
+}
+```
+
+# 封装axios,这里结合了vant消息提示功能
+
+```js
+/****** 引入axios、qs依赖, qs是axios内的,无需单独安装 ******/
+import axios from "axios";
+import qs from "qs";//序列化post类型的数据,post请求需要
+
+/****** 创建axios实例 ******/
+const service = axios.create({
+  baseURL: 'http://192.168.11.114',
+  headers: {
+    'Content-Type': 'application/x-www-form-urlencoded'
+  }
+});
+
+/****** request拦截器==>对axios请求配置做统一处理 ******/
+let axiosTime = 0
+service.interceptors.request.use(config => {
+  axiosTime++
+  //vant提示功能,forbidClick禁用背景点击
+  Toast.loading({
+    message: '正在加载...',
+    forbidClick: true
+  });
+  config.method === 'post'
+    ? config.data = qs.stringify({ ...config.data })
+    : config.params = { ...config.params };
+  //从本地存储拿token,除了第一次登陆页面没有,其他都有,开发阶段默认写死token
+  const token = window.localStorage.getItem('token') || 'f464b59f-3915-4328-acf8-36bae54db5ba'
+  if (token) { // 若token存在，则每个http header都加上token
+    config.headers.Authorization = token;//请求头加上token
+  }
+  return config;
+}, err => {
+  return Promise.reject(err)
+});
+
+/****** respone拦截器==>对响应做处理 ******/
+service.interceptors.response.use(
+  response => {  //成功请求到数据 
+    axiosTime--
+    if (axiosTime == 0) {
+      Toast.clear();//手动清除 Toast
+    }
+    // 如果返回的状态码为200，说明接口请求成功，可以正常拿到数据
+    // 否则的话抛出错误
+    if (response.status === 200) {
+      return Promise.resolve(response);
+    } else {
+      return Promise.reject(response);
+    }
+  },
+  error => {  //响应错误处理
+    axiosTime--
+    if (axiosTime == 0) {
+      Toast.clear()
+    }
+    return Promise.reject(error)
+  }
+);
+/****** axios实例暴露出去 ******/
+export default service;
+```
+
+```js
+// 调用方法 在需要的页面导入就可以使用了,最后在主文件main.js导入,挂在Vue的prototype上
+//post请求参数放在data里面，get请求参数放在params里。
+const obj = {
+  id: 1
+};
+service({
+  url: '/person_pay/getpersoninfo',
+  method: 'post',
+  data: obj
+})
+service({
+  url: '/person_pay/getpersoninfo',
+  method: 'get',
+  params: obj
+})
+```
