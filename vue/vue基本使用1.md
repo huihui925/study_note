@@ -201,6 +201,12 @@ data:{
 }
 ```
 
+# [用 `key` 管理可复用的元素](https://cn.vuejs.org/v2/guide/conditional.html#用-key-管理可复用的元素)
+
+![image-20200504110129965](E:\zhouxiaohui\study_note\vue\vue基本使用1.assets\image-20200504110129965.png)
+
+![image-20200504110335194](E:\zhouxiaohui\study_note\vue\vue基本使用1.assets\image-20200504110335194.png)
+
 # v-if 
 
 > 通过删除和创建元素 达到显示和隐藏元素目的,有较高切换消耗 为true则显示 false隐藏
@@ -308,6 +314,44 @@ data: {
 ```
 
 **isActive以is开头的类名标识符一般是布尔值，给类设置布尔值判断时，用is更形象**
+
+## class用在组件上
+
+当在一个自定义组件上使用 `class` property 时，这些 class 将被添加到该组件的根元素上面。这个元素上已经存在的 class 不会被覆盖。
+
+例如，如果你声明了这个组件：
+
+```js
+Vue.component('my-component', {
+  template: '<p class="foo bar">Hi</p>'
+})
+```
+
+然后在使用它的时候添加一些 class：
+
+```html
+<my-component class="baz boo"></my-component>
+```
+
+HTML 将被渲染为：
+
+```html
+<p class="foo bar baz boo">Hi</p>
+```
+
+对于带数据绑定 class 也同样适用：
+
+```html
+<my-component v-bind:class="{ active: isActive }"></my-component>
+```
+
+当 `isActive` 为 truthy[[1\]](https://cn.vuejs.org/v2/guide/class-and-style.html#footnote-1) 时，HTML 将被渲染成为：
+
+```html
+<p class="foo bar active">Hi</p>
+```
+
+
 
 # :style绑定行内样式
 
