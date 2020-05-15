@@ -200,3 +200,197 @@ input {
 }
 ```
 
+# 自定义右箭头
+
+```css
+:after {
+    content: " ";
+    display: inline-block;
+    -webkit-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    transform: rotate(45deg);
+    height: 0.4rem;
+    width: 0.4rem;
+    border-width: 1px 1px 0 0;
+    border-color: #C8C8CD;
+    border-style: solid;
+    position: relative;
+    top: 0px;
+    margin-left: .3em;
+}
+```
+
+# 圆形头像 cover
+
+```html
+<div>
+    <img />
+</div>
+```
+
+```css
+div{
+    width: 100%;
+    overflow: hidden;
+    border-radius: 50%;
+    position: relative;
+    display: inline-block;
+}
+img{
+    object-fit: cover;
+    border-radius: inherit;
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+```
+
+# jquery的底部滑出层
+
+```html
+		<div class="van-overlay" style="z-index: 2011; display: none;"></div>
+		<div class="van-popup van-popup--bottom" style="height: 40vh; z-index: 2012; display: none;">
+			<div class="title">
+				<div></div>
+				<span>我的推荐人</span>
+				<div class="close">×</div>
+			</div>
+		</div>
+```
+
+```css
+/*	弹出层样式*/
+	.van-overlay {
+		position: fixed;
+		top: 0;
+		left: 0;
+		z-index: 1;
+		width: 100%;
+		height: 100%;
+		background-color: rgba(0, 0, 0, 0.7);
+	}
+	.van-popup--bottom {
+		bottom: 0;
+		left: 0;
+		width: 100%;
+	}
+	.van-popup {
+		position: fixed;
+		max-height: 100%;
+		overflow-y: auto;
+		background-color: #fff;
+		-webkit-overflow-scrolling: touch;
+		padding: 0 3vw;
+	}
+/*	弹出层内容的样式*/
+	.van-popup .title{
+			 display: flex;
+			 justify-content: space-between;
+			 font-size: 4.5vw;
+			 color: #000;
+		 }
+	.van-popup span{
+		display: flex;
+		align-items: center;
+	}
+	.van-popup .close{
+		font-size: 8vw;
+	}
+```
+
+```js
+	//弹出层淡入淡出和滑动
+	$('.van-overlay').fadeIn();
+	$(".van-popup").slideDown();
+})
+$(".close").click(function(){
+	$('.van-overlay').fadeOut();;
+	$(".van-popup").slideUp();
+	return false;
+});
+$(".van-overlay").click(function(){
+	$('.van-overlay').fadeOut();;
+	$(".van-popup").slideUp();
+	return false;
+});
+```
+
+# jquery 提示框
+
+```html
+<div class="van-toast van-toast--middle van-toast--text" style="z-index: 2002; display: none;">
+            <div class="van-toast__text">提示内容</div>
+        </div>
+
+```
+
+```css
+
+    .van-toast{
+        min-width: 96px;
+        min-height: 0;
+        padding: 8px 12px;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        -webkit-box-orient: vertical;
+        -webkit-box-direction: normal;
+        flex-direction: column;
+        -webkit-box-align: center;
+        align-items: center;
+        -webkit-box-pack: center;
+        justify-content: center;
+        box-sizing: content-box;
+        color: #fff;
+        font-size: 0.75rem;
+        line-height: 20px;
+        white-space: pre-wrap;
+        text-align: center;
+        word-wrap: break-word;
+        background-color: rgba(50, 50, 51, 0.88);
+        border-radius: 8px;
+        transform: translate3d(-50%, -50%, 0);
+    }
+    .van-toast--text .van-toast__text, .van-toast--html .van-toast__text {
+        margin-top: 0;
+    }
+```
+
+```js
+let toast = function(msg) {
+        $('.van-toast__text').html(msg);
+        $('.van-toast').fadeIn();
+        setTimeout(function() {
+            $('.van-toast').fadeOut();
+    },1300)
+    }
+```
+
+# css实现勾号 √
+
+```css
+.check {
+    position: relative;
+    display: inline-block;
+    width: 25px;
+    height: 25px;
+    background: red;
+    border-radius: 25px;
+}
+.check::after {
+    content: "";
+    position: absolute;
+    left: 5px;
+    top: 8px;
+    width: 50%;
+    height: 25%;
+    border: 2px solid #000;
+    border-radius: 1px;
+    border-top: none;
+    border-right: none;
+    background: transparent;
+    transform: rotate(-45deg);
+}
+```
+
+![image-20200515090510998](E:\zhouxiaohui\study_note\css\css.assets\image-20200515090510998.png)
