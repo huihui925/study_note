@@ -391,6 +391,21 @@ let toast = function(msg) {
     background: transparent;
     transform: rotate(-45deg);
 }
+./index.php?i=1&c=entry&m=ewei_shopv2&do=mobile&r=member.history
+
 ```
 
 ![image-20200515090510998](E:\zhouxiaohui\study_note\css\css.assets\image-20200515090510998.png)
+
+# placeholder居中
+
+```css
+
+input::-ms-input-placeholder{
+        text-align: center;
+}
+input::-webkit-input-placeholder{
+        text-align: center;
+
+```
+
