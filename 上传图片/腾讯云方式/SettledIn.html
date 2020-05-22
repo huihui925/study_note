@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <title>申请入驻</title>
+    <link rel="stylesheet" href="./css/alliance.css">
+    <style>
+        body {
+            background-color: #fff;
+            overflow-y: scroll;
+        }
+    </style>
+</head>
+
+<body>
+    <div class='alliance alliance-container'>
+        <!-- <div class='alliance-header'>
+            <a href="businessAll.html" class='btn-back'></a>
+            <span class='alliance-title'>申请入驻</span>
+        </div> -->
+        <div class="settle-form">
+            <form id='settle-form'>
+                <div class='form-item'>
+                    <label for="name">真实姓名</label>
+                    <input id='name' type="text" placeholder="请输入您的真实姓名" name="name">
+                    <div class='error-tips' id='name-tips'></div>
+                </div>
+                
+                <div class='form-item'>
+                    <label for="identityId">身份证号码</label>
+                    <input id='identityId' type="text" placeholder="请输入您的身份证号码" name="identityId">
+                    <div class='error-tips' id='identityId-tips'></div>
+                </div>
+                <div class='form-item'>
+                    <label for="shopName">店铺名字</label>
+                    <input id='shopName' type="text" placeholder="请输入您的店铺名字" name="shopName">
+                    <div class='error-tips' id='shopName-tips'></div>
+                </div>
+                <div class='form-item license'>
+                    <label for="license">上传营业执照</label>
+                    <div class='licenseUpload'>
+                        <img id='upload-img' src="./img/upload.png" />
+                        <input type="file" name="fileToUpload" class="fileToUpload" accept="image/*" capture="camera"
+                            id='uploadInput' />
+                    </div>
+                    <div class='tips'><em class='tipsColor'>提示：</em>支持jpg、png、jpeg图片，大小不超过2M</div>
+                    <div class='error-tips' id='license-tips'></div>
+                </div>
+                <div class='form-item'>
+                    <label for="phone">账号</label>
+                    <input id='phone' type="text" placeholder="请输入您的手机号为账号" name="phone" >
+                    <div class='tips'><em class='tipsColor'>提示：</em>初始密码为123456，请到设置中修改密码</div>
+                    <div class='error-tips' id='phone-tips'></div>
+                </div>
+                <div class='form-item agree'>
+                    <input id='checkbox-input' name="agreement" type="checkbox" />您将同意并遵守<label for="checkbox-input"></label><a class='agreement'>《商家入驻协议》</a>
+                    <div class='error-tips' id='agreement-tips'></div>
+                </div>
+                <div class='form-item btn-settle-com'>
+                    <a class='btn-settle' href="javascript:void(0);">立即申请</a>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script src="./js/token.js"></script>
+    <script src="./js/cos-js-sdk-v5.min.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="./js/settleIn.js"></script>
+</body>
+
+</html>
