@@ -409,3 +409,126 @@ input::-webkit-input-placeholder{
 
 ```
 
+# 清除input框默认样式
+
+```css
+    input{
+        display: block;
+        box-sizing: border-box;
+        margin: 0;
+        padding: 3vw;
+        color: #323233;
+        line-height: inherit;
+        text-align: left;
+        background-color: transparent;
+        border: 0;
+        resize: none;
+        border-bottom: 1px solid #ccc;
+        margin-bottom: 4vw;
+        font-size: 4.5vw;
+    }
+```
+
+# 弹出窗
+
+```css
+    .shade input::-ms-input-placeholder{
+        text-align: center;
+    }
+    .shade input::-webkit-input-placeholder {
+        text-align: center;
+    }
+    .shade input{
+        display: block;
+        box-sizing: border-box;
+        margin: 0;
+        padding: 3vw;
+        color: #323233;
+        line-height: inherit;
+        text-align: left;
+        background-color: transparent;
+        border: 0;
+        resize: none;
+        border-bottom: 1px solid #ccc;
+        margin-bottom: 4vw;
+        font-size: 4.5vw;
+    }
+    .shade{
+        position: fixed;
+        top: 0;
+        left: 0;
+        background: rgba(0,0,0,.3);
+        width: 100vw;
+        height: 100vh;
+        z-index: 3;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+    }
+    .shade_content{
+        background: #fff;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 4vw;
+        border-radius: 2vw;
+        max-width: 90vw;
+        overflow: hidden;
+    }
+    .shade_content .title{
+        font-weight: bold;
+        font-size: 4.2vw;
+    }
+    .shade_content input{
+        font-size: 4vw;
+        width: 80%;
+    }
+    .shade .close{
+        border: 2px solid #fff;
+        font-size: 15vw;
+        width: 12vw;
+        height: 12vw;
+        border-radius: 50%;
+        color: #fff;
+        font-weight: 200;
+        margin-top: 3vw;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .shade .btn{
+        width: 80%;
+        border-radius: 12vw;
+        font-size: 4vw;
+        height: 9vw;
+        background: #ffb451;
+        color: #fff;
+        line-height: 9vw;
+    }
+```
+
+```html
+<div class="shade" style="display: none;">
+    <div class="shade_content">
+        <div class="title">报名</div>
+        <input type="number" placeholder="请输入您的手机号码" inputmode="decimal" class="num">
+        <div class="btn public_021btn" onclick="handleClick()">立即竞价</div>
+    </div>
+    <div class="close" onclick="close123()">
+        ×
+    </div>
+</div>
+```
+
+```js
+$(".bidding").click(function () {
+        $(".shade").fadeIn()
+    })
+    function close123() {
+        $(".shade").fadeOut()
+        $(".use_integral").text("")
+        $(".num").val("")
+    }
+```
+
